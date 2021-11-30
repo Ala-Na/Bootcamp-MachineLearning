@@ -54,3 +54,11 @@ class   MyLinearRegression():
         J_elem = self.loss_elem_(y, y_hat)
         J_value = float(1/(2*y.shape[0]) * np.sum(J_elem))
         return J_value
+
+    def mse_(self, y, y_hat):
+        if not isinstance(y, np.ndarray) or y.ndim != 2 or y.shape[1] != 1:
+            return None
+        elif not isinstance(y_hat, np.ndarray) or y_hat.shape != y.shape:
+            return None
+        mse = ((y_hat - y) ** 2).mean(axis=None)
+        return float(mse)
