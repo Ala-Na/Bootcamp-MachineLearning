@@ -13,6 +13,12 @@ def extract_vector(filename, vector_name):
     x = x.reshape(-1, 1)
     return x
 
+def extract_matrix(filename, features):
+    assert os.path.isfile(filename)
+    datas = pd.read_csv(filename)
+    X = np.array(datas[features])
+    return X
+
 def draw_spots(x, y, label, color, size):
     plt.scatter(x, y, size, label=label, color=color, zorder=2)
 
@@ -37,7 +43,7 @@ def univar_lr():
     #Datas for all
     filename = 'spacecraft_data.csv'
     y = extract_vector(filename, 'Sell_price')
-    thetas = [1] * (y.shape[1] + 1)
+    thetas = [1] * 2
     labels = ['Sell price', 'Predicted sell price']
 
     #Age
@@ -57,8 +63,51 @@ def univar_lr():
 
 # Part Two : Multivariate regression
 
-def multivar_lr():
+def draw_sub_spots(ax, x, y, label, color, size):
+    ax.scatter(x, y, size, label=label, color=color, zorder=2)
+
+def get_sub_graph(ax, fig, x, y, y_hat, labels, axis, colors):
+    ax.grid()
+    draw_sub_spots(ax, x, y, labels[0], colors[0], 45)
+    draw_sub_spots(ax, x, y_hat, labels[1], colors[1], 15)
+    ax.set_xlabel(axis[0])
+    ax.set_ylabel(axis[1])
+    ax.legend()
+
+def multivar_lr_model(filename, y, thetas, labels):
+    X = extract_matrix(filename, ['Age','Thrust_power','Terameters'])
+    myLR = MyLR(thetas, alpha=0.00001, max_iter=100000)
+    myLR.fit_(X, y)
+    y_hat = myLR.predict_(X)
+    print("Thetas for multivariate model: {}".format(myLR.thetas.tolist()))
+    print("MSE for multivariate model: {}\n".format(myLR.mse_(y, y_hat)))
     
+    fig, ax = plt.subplots(1, 3)
+
+    #Graph for age
+    axis_age = ['$x_{1}$: age in years', 'y: sell price (in keuros)']
+    colors_age = ['navy', 'dodgerblue']
+    get_sub_graph(ax[0], fig, X[:,0], y, y_hat, labels, axis_age, colors_age)
+
+    #Graph for thrust
+    axis_thrust = ['$x_{2}$: thrust power(in 10KM/s)', 'y: sell price (in keuros)']
+    colors_thrust = ['seagreen', 'lime']
+    get_sub_graph(ax[1], fig, X[:,1], y, y_hat, labels, axis_thrust, colors_thrust)
+
+    #Graph for total distance
+    axis_distance = ['$x_{3}$: distance totalizer value of spacecraft (in Tmeters))', 'y: sell price (in keuros)']
+    colors_distance = ['purple', 'plum']
+    get_sub_graph(ax[2], fig, X[:,2], y, y_hat, labels, axis_distance, colors_distance)
+
+    plt.show()
+
+def multivar_lr():
+    filename = 'spacecraft_data.csv'
+    y = extract_vector(filename, 'Sell_price')
+    thetas = [1] * 4
+    labels = ['Sell price', 'Predicted sell price']
+    multivar_lr_model(filename, y, thetas, labels)
+
 
 if __name__ == '__main__':
     print("----------------------------")
@@ -67,3 +116,4 @@ if __name__ == '__main__':
     univar_lr()
     print("MULTIVARIATE LINEAR REGRESSION")
     print("----------------------------")
+    multivar_lr()

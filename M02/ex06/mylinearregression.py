@@ -23,7 +23,6 @@ class   MyLinearRegression():
         X = np.insert(x, 0, 1.0, axis=1)
         return np.dot((np.transpose(X) / x.shape[0]), (np.dot(X, self.thetas) - y))
 
-
     def fit_(self, x, y):
         if not isinstance(x, np.ndarray) or x.ndim != 2:
             return None
