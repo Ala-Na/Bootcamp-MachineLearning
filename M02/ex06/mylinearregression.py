@@ -1,6 +1,5 @@
 import numpy as np
 
-
 class   MyLinearRegression():
 
     def __init__(self, thetas, alpha=0.001, max_iter=1000):
@@ -22,7 +21,8 @@ class   MyLinearRegression():
         if not isinstance(y, np.ndarray) or y.shape != (x.shape[0], 1):
             return None
         X = np.insert(x, 0, 1.0, axis=1)
-        return np.matmul((np.transpose(X) / x.shape[0]), (np.matmul(X, self.thetas) - y))
+        return np.dot((np.transpose(X) / x.shape[0]), (np.dot(X, self.thetas) - y))
+
 
     def fit_(self, x, y):
         if not isinstance(x, np.ndarray) or x.ndim != 2:
@@ -50,3 +50,11 @@ class   MyLinearRegression():
         if not isinstance(y_hat, np.ndarray) or y_hat.shape != y.shape:
             return None
         return np.sum((y_hat - y) * (y_hat - y)) / (2 * y.shape[0])
+
+    def mse_(self, y, y_hat):
+        if not isinstance(y, np.ndarray) or y.ndim != 2 or y.shape[1] != 1:
+            return None
+        elif not isinstance(y_hat, np.ndarray) or y_hat.shape != y.shape:
+            return None
+        mse = ((y_hat - y) ** 2).mean(axis=None)
+        return float(mse)
