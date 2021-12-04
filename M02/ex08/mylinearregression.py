@@ -11,7 +11,6 @@ class   MyLinearRegression():
 
     def predict_(self, x):
         if not isinstance(x, np.ndarray) or x.ndim != 2 or (x.shape[1] + 1) != self.thetas.shape[0]:
-            print("not good")
             return None
         X = np.insert(x, 0, 1.0, axis=1)
         return np.dot(X, self.thetas)
