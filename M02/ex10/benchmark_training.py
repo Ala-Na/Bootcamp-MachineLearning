@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import csv
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -24,7 +25,18 @@ def data_spliter(x, y, proportion):
     x, y = united_shuffle(x, y)
     return (x[:ind_split, :], x[ind_split:, :], y[:ind_split, :], y[ind_split:, :])
 
+def create_model_file():
+    header = ['Form', 'Global MSE', 'Training MSE', 'Testing MSE', 'Training set', 'Testing set', 'Thetas', 'Alpha', 'Max iter']
+    f = open('models.csv', 'a+')
+    writer = csv.writer(f)
+    writer.writerow(header)
+
+
 if __name__ == '__main__':
     x, y = extract_datas('space_avocado.csv')
-    splited_datas = data_spliter(x, y, 0.5)
-    print(splited_datas)
+    create_model_file()
+    # splited_datas = data_spliter(x, y, 0.8)
+    # x_base_training = splited_datas[0]
+    # y_training = splited_datas[2]
+    # x_base_testing = splited_datas[1]
+    # y_testing = splited_datas[3]
