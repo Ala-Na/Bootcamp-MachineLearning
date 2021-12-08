@@ -15,13 +15,12 @@ def extract_datas(filename):
 
 def create_model_file():
     if (os.path.isfile('models.csv')):
-        f = open('models.csv', 'a+')
-        return f
-    header = ['Form', 'Global MSE', 'Training MSE', 'Testing MSE', 'Training set', 'Testing set', 'Thetas', 'Alpha', 'Max iter']
+        return
+    header = ['Form', 'Global MSE', 'Training MSE', 'Testing MSE', 'Testing set', 'Thetas after fit', 'Alpha', 'Max iter']
     f = open('models.csv', 'w')
     writer = csv.writer(f)
     writer.writerow(header)
-    return f
+    f.close()
 
 # Data splitter to obtain testing and training set
 
@@ -75,6 +74,33 @@ def get_poly_forms(x_training, x_testing, max_power):
                 x_testing_poly.append(test_array)
     return poly_name, x_training_poly, x_testing_poly    
 
+# Write model in file
+
+def get_line_to_add(name, global_mse, training_mse, testing_mse, x_testing, thetas, alpha, max_iter):
+    line = [name, str(global_mse), str(training_mse), str(testing_mse), np.array2string(x_testing), np.array2string(thetas), str(alpha), str(max_iter)]
+    return line
+
+def add_model_to_file(name, global_mse, training_mse, testing_mse, x_testing, thetas, alpha, max_iter):
+    file = open('models.csv', 'a')
+    line = get_line_to_add(name, global_mse, training_mse, testing_mse, x_testing, thetas, alpha, max_iter)
+    csvwriter = csv.writer(file, delimiter = ',')
+    csvwriter.writerow(line)
+    file.close()
+
+
+# Check if model already tried
+
+def check_if_model_exist_in_file(form, x_test, alpha, max_iter):
+    df = pd.read_csv('models.csv')
+    find_form = df.loc[df['Form'] == form]
+    find_iter = find_form.loc[find_form['Max iter'] == max_iter]
+    find_alpha = find_iter.loc[find_iter['Alpha'] == alpha]
+    #find_set = find_alpha.loc[find_alpha['Testing set'] == np.array2string(x_test)]
+    #if find_set.empty:
+    if find_alpha.empty:
+        return True
+    return False
+
 # Training models
 
 def get_alpha(poly_name):
@@ -88,44 +114,46 @@ def get_alpha(poly_name):
         alpha = 3e-8
     return alpha
 
-def train_all_models(x_training_forms, x_testing_forms, y_training, y_testing, poly_names, file):
+def train_all_models(base_datas, x_training_forms, x_testing_forms, poly_names):
     y_hat = []
+    y_training = base_datas[2]
+    y_testing = base_datas[3]
     for i in range(0, len(x_training_forms)):
+        # Thetas is initialized to a list of 1
         thetas = [1] * (x_training_forms[i].shape[1] + 1)
+        # We try to obtain alpha adapted to each form
         alpha = get_alpha(poly_names[i])
-        print(alpha)
-        
-        form_lr = MyLR(thetas, alpha=alpha, max_iter=1000)
+        max_iter = 1000
+        # First, we check if the model is already present in models.csv or not
+        if (check_if_model_exist_in_file(poly_names[i], base_datas[1], alpha, max_iter) == False):
+            continue
+        # We train the model
+        form_lr = MyLR(thetas, alpha=alpha, max_iter=max_iter)
         form_lr.fit_(x_training_forms[i], y_training)
-
-        # lines to show thetas
-        np.set_printoptions(precision=2)
-        list = form_lr.thetas[:,0]
-        print(poly_names[i], ": ", list)
-        #end lines to show thetas
-
+        # Obtaining y_hat with training set and corresponding MSE
         y_hat_training = form_lr.predict_(x_training_forms[i])
         training_mse = form_lr.mse_(y_training, y_hat_training)
-        print("training mse : ", training_mse)
-
+        if np.isnan(training_mse):
+            continue
+        # Obtaining y_hat for testing set only and corresponding MSE
         y_hat_testing = form_lr.predict_(x_testing_forms[i])
         testing_mse = form_lr.mse_(y_testing, y_hat_testing)
-        print("testing mse : ", testing_mse)
-
+        if np.isnan(testing_mse):
+            continue
+        # We seek the global MSE
         x_global = np.concatenate([x_training_forms[i], x_testing_forms[i]])
         y_global = np.concatenate([y_training, y_testing])
         y_hat_global = form_lr.predict_(x_global)
         global_mse = form_lr.mse_(y_global, y_hat_global)
-        print("global mse : ", global_mse)
+        if np.isnan(global_mse):
+            continue
+        # We add the model to file
+        add_model_to_file(poly_names[i], global_mse, training_mse, testing_mse, x_testing_forms[i], form_lr.thetas, alpha, max_iter)
 
 
 if __name__ == '__main__':
     x, y = extract_datas('space_avocado.csv')
-    file = create_model_file()
+    create_model_file()
     splited_datas = data_spliter(x, y, 0.8)
-    x_base_training = splited_datas[0]
-    y_training = splited_datas[2]
-    x_base_testing = splited_datas[1]
-    y_testing = splited_datas[3]
-    poly_names, x_training_forms, x_testing_forms = get_poly_forms(x_base_training, x_base_testing, 4)
-    train_all_models(x_training_forms, x_testing_forms, y_training, y_testing, poly_names, file)
+    poly_names, x_training_forms, x_testing_forms = get_poly_forms(splited_datas[0], splited_datas[1], 4)
+    train_all_models(splited_datas, x_training_forms, x_testing_forms, poly_names)

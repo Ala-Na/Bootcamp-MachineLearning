@@ -1,7 +1,7 @@
 Proportion : According to the WWW, a proportion of 80/20 is "good" for big datasets (case here).
 Same proportion should be kept.
 
-Poynomial features : Every x value could be individually put to polynomial form or not. 
+Polynomial features : Every x value could be individually put to polynomial form or not. 
 It's a question relative to feature engineering.
 Red on stackexchange : 
 "By the way, usage of single variable polynomial features in decision tree based algorithms 
