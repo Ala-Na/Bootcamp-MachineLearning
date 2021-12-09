@@ -3,6 +3,7 @@ import os
 import csv
 import pandas as pd
 import matplotlib.pyplot as plt
+from pandas.core.frame import DataFrame
 from mylinearregression import MyLinearRegression as MyLR
 
 # Utils functions for files management
@@ -16,7 +17,7 @@ def extract_datas(filename):
 def create_model_file():
     if (os.path.isfile('models.csv')):
         return
-    header = ['Form', 'Global MSE', 'Training MSE', 'Testing MSE', 'Testing set', 'Thetas after fit', 'Alpha', 'Max iter']
+    header = ['', 'Form', 'Global MSE', 'Training MSE', 'Testing MSE', 'Testing set', 'Thetas after fit', 'Alpha', 'Max iter']
     f = open('models.csv', 'w')
     writer = csv.writer(f)
     writer.writerow(header)
@@ -76,30 +77,34 @@ def get_poly_forms(x_training, x_testing, max_power):
 
 # Write model in file
 
-def get_line_to_add(name, global_mse, training_mse, testing_mse, x_testing, thetas, alpha, max_iter):
-    line = [name, str(global_mse), str(training_mse), str(testing_mse), np.array2string(x_testing), np.array2string(thetas), str(alpha), str(max_iter)]
-    return line
-
 def add_model_to_file(name, global_mse, training_mse, testing_mse, x_testing, thetas, alpha, max_iter):
-    file = open('models.csv', 'a')
-    line = get_line_to_add(name, global_mse, training_mse, testing_mse, x_testing, thetas, alpha, max_iter)
-    csvwriter = csv.writer(file, delimiter = ',')
-    csvwriter.writerow(line)
-    file.close()
+    df = pd.DataFrame()
+    df = df.append({'Form' : name,'Global MSE' : global_mse, 'Training MSE' : training_mse, 'Testing MSE' : testing_mse, \
+        'Testing set' : x_testing, 'Thetas after fit' : thetas[:, 0].tolist(), 'Alpha' : alpha, 'Max iter' : max_iter}, ignore_index=True)
+    df.to_csv('models.csv', mode='a', header=False)
 
+# Check if model already tried or if tried but current dataset is better
 
-# Check if model already tried
-
-def check_if_model_exist_in_file(form, x_test, alpha, max_iter):
+def check_if_model_exist_in_file(form, alpha, max_iter):
     df = pd.read_csv('models.csv')
     find_form = df.loc[df['Form'] == form]
     find_iter = find_form.loc[find_form['Max iter'] == max_iter]
     find_alpha = find_iter.loc[find_iter['Alpha'] == alpha]
-    #find_set = find_alpha.loc[find_alpha['Testing set'] == np.array2string(x_test)]
-    #if find_set.empty:
+    #print(find_alpha.index)
     if find_alpha.empty:
         return True
     return False
+
+def check_if_dataset_is_better(form, x_test, global_mse, training_mse, testing_mse, thetas, alpha, max_iter):
+    df = pd.read_csv('models.csv')
+    find_form = df.loc[df['Form'] == form]
+    find_iter = find_form.loc[find_form['Max iter'] == max_iter]
+    find_alpha = find_iter.loc[find_iter['Alpha'] == alpha]
+    if find_alpha.empty or find_alpha['Global MSE'].values[0] <= global_mse:
+        return False
+    #CONTINUE HERE
+    # use find_alpha.index ? Like df.drop(index) ?
+    
 
 # Training models
 
@@ -123,9 +128,9 @@ def train_all_models(base_datas, x_training_forms, x_testing_forms, poly_names):
         thetas = [1] * (x_training_forms[i].shape[1] + 1)
         # We try to obtain alpha adapted to each form
         alpha = get_alpha(poly_names[i])
-        max_iter = 1000
+        max_iter = 100
         # First, we check if the model is already present in models.csv or not
-        if (check_if_model_exist_in_file(poly_names[i], base_datas[1], alpha, max_iter) == False):
+        if (check_if_model_exist_in_file(poly_names[i], alpha, max_iter) == False):
             continue
         # We train the model
         form_lr = MyLR(thetas, alpha=alpha, max_iter=max_iter)
