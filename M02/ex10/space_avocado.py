@@ -18,6 +18,7 @@ def find_best_model(filename):
     min_col = df.min()
     best = df.loc[df['Global MSE'] == min_col['Global MSE']]
     print('\033[92mBest model:\033[0m Form \033[34m{}\033[0m of MSE \033[34m{}\033[0m'.format(best['Form'].values[0], best['Global MSE'].values[0]))
+    print('Thetas \033[34m{}\033[0m'.format(best['Thetas after fit'].values[0]))
     return best
 
 def recuperate_thetas(best):
@@ -86,7 +87,6 @@ def print_best_representation(best, x, y):
     else :
         x_cont_poly = get_poly_continuous_x(x_cont, x1, x2, x3)
     y_hat = best_lr.predict_(x_cont_poly)
-    print(y_hat.shape)
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     ax.scatter3D(x[:,0].flatten(), x[:, 2].flatten(), y.flatten(), color='seagreen', label='True price')

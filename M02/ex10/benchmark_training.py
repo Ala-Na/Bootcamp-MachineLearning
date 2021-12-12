@@ -121,9 +121,9 @@ def get_alpha(poly_name):
     elif (poly_name.find('x2p3') != -1 or poly_name.find('x2p2') != -1 or poly_name.find('x1p3') != -1 or poly_name.find('x1p4') != -1):
         alpha = 3e-21
     elif (poly_name.find('x3p4') != -1 or poly_name.find('x1*x2') != -1):
-        alpha = 3e-30
+        alpha = 3e-20
     elif (poly_name.find('x1p2') != -1 or poly_name.find('*') != -1):
-        alpha = 3e-9
+        alpha = 3e-8
     else:
         alpha = 3e-7
     return alpha
@@ -146,7 +146,7 @@ def train_all_models(base_datas, x_training_forms, x_testing_forms, poly_names):
         thetas = recuperate_thetas(poly_names[i], x_training_forms[i].shape[1] + 1)
         # We try to obtain alpha adapted to each form
         alpha = get_alpha(poly_names[i])
-        max_iter = 1000
+        max_iter = 100
         # We train the model
         print("\033[33mTraining form {} for alpha {} and max_iter {}\033[0m".format(poly_names[i], alpha, max_iter))
         form_lr = MyLR(thetas, alpha=alpha, max_iter=max_iter)
