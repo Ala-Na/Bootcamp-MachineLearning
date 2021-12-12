@@ -17,7 +17,7 @@ def extract_datas(filename):
 def create_model_file():
     if (os.path.isfile('models.csv')):
         return
-    header = ['', 'Form', 'Global MSE', 'Training MSE', 'Testing MSE', 'Testing set', 'Thetas after fit', 'Alpha', 'Max iter']
+    header = ['', 'Form', 'Global MSE', 'Thetas after fit', 'Alpha']
     f = open('models.csv', 'w')
     writer = csv.writer(f)
     writer.writerow(header)
@@ -40,6 +40,22 @@ def data_spliter(x, y, proportion):
     x, y = united_shuffle(x, y)
     return (x[:ind_split, :], x[ind_split:, :], y[:ind_split, :], y[ind_split:, :])
 
+# Function to get crossed form
+
+def get_crossed_form(x_training, x_testing):
+    crossed_form = ['x1*x2 x3', 'x1*x3 x2', 'x1 x2*x3', 'x1*x2*x3']
+    x_train = []
+    x_train.append(np.c_[np.multiply(x_training[:, 0], x_training[:, 1]), x_training[:, 2]])
+    x_train.append(np.c_[np.multiply(x_training[:, 0], x_training[:, 2]), x_training[:, 1]])
+    x_train.append(np.c_[x_training[:, 0], np.multiply(x_training[:, 1], x_training[:, 2])])
+    x_train.append(np.multiply(np.multiply(x_training[:, 0], x_training[:, 1]), x_training[:, 2]).reshape(-1, 1))
+    x_test = []
+    x_test.append(np.c_[np.multiply(x_testing[:, 0], x_testing[:, 1]), x_testing[:, 2]])
+    x_test.append(np.c_[np.multiply(x_testing[:, 0], x_testing[:, 2]), x_testing[:, 1]])
+    x_test.append(np.c_[x_testing[:, 0], np.multiply(x_testing[:, 1], x_testing[:, 2])])
+    x_test.append(np.multiply(np.multiply(x_testing[:, 0], x_testing[:, 1]), x_testing[:, 2]).reshape(-1, 1))
+    return crossed_form, x_train, x_test
+    
 # Function to obtains polynomial form
 
 def add_polynomial_features(x, power):
@@ -77,47 +93,49 @@ def get_poly_forms(x_training, x_testing, max_power):
 
 # Write model in file
 
-def add_model_to_file(name, global_mse, training_mse, testing_mse, x_testing, thetas, alpha, max_iter):
+def add_model_to_file(name, global_mse, thetas, alpha):
     df = pd.DataFrame()
-    df = df.append({'Form' : name,'Global MSE' : global_mse, 'Training MSE' : training_mse, 'Testing MSE' : testing_mse, \
-        'Testing set' : x_testing, 'Thetas after fit' : thetas[:, 0].tolist(), 'Alpha' : alpha, 'Max iter' : max_iter}, ignore_index=True)
+    df = df.append({'Form' : name,'Global MSE' : global_mse, \
+        'Thetas after fit' : thetas[:, 0].tolist(), 'Alpha' : alpha}, ignore_index=True)
     df.to_csv('models.csv', mode='a', header=False)
 
 # Check if model already tried or if tried but current dataset is better
 
-def check_if_model_exist_in_file(form, alpha, max_iter):
+def check_if_dataset_is_better(form, global_mse, alpha):
     df = pd.read_csv('models.csv')
     find_form = df.loc[df['Form'] == form]
-    find_iter = find_form.loc[find_form['Max iter'] == max_iter]
-    find_alpha = find_iter.loc[find_iter['Alpha'] == alpha]
-    #print(find_alpha.index)
-    if find_alpha.empty:
+    if find_form.empty:
         return True
-    return False
-
-def check_if_dataset_is_better(form, x_test, global_mse, training_mse, testing_mse, thetas, alpha, max_iter):
-    df = pd.read_csv('models.csv')
-    find_form = df.loc[df['Form'] == form]
-    find_iter = find_form.loc[find_form['Max iter'] == max_iter]
-    find_alpha = find_iter.loc[find_iter['Alpha'] == alpha]
-    if find_alpha.empty or find_alpha['Global MSE'].values[0] <= global_mse:
+    if global_mse == float("inf") or find_form['Global MSE'].values[0] <= global_mse:
         return False
-    #CONTINUE HERE
-    # use find_alpha.index ? Like df.drop(index) ?
-    
+    idx = (find_form.index.tolist())[0]
+    df.drop(idx, inplace=True)
+    df.to_csv('models.csv', index=False)
+    return True
 
 # Training models
 
 def get_alpha(poly_name):
     if (poly_name.find('x2p4') != -1):
-        alpha = 3e-29
+        alpha = 3e-28
     elif (poly_name.find('x2p3') != -1 or poly_name.find('x2p2') != -1 or poly_name.find('x1p3') != -1 or poly_name.find('x1p4') != -1):
-        alpha = 3e-23
-    elif (poly_name.find('x3p4') != -1 or poly_name.find('x1p2') != -1):
-        alpha = 3e-11
+        alpha = 3e-21
+    elif (poly_name.find('x3p4') != -1 or poly_name.find('x1*x2') != -1):
+        alpha = 3e-30
+    elif (poly_name.find('x1p2') != -1 or poly_name.find('*') != -1):
+        alpha = 3e-9
     else:
-        alpha = 3e-8
+        alpha = 3e-7
     return alpha
+
+def recuperate_thetas(form, len_thetas):
+    df = pd.read_csv('models.csv')
+    find_form = df.loc[df['Form'] == form]
+    if find_form.empty:
+        return [1] * len_thetas
+    thetas = (find_form['Thetas after fit'].values)[0].strip('[]').replace('\' ', '').split(',')
+    thetas = [float(i) for i in thetas]
+    return thetas
 
 def train_all_models(base_datas, x_training_forms, x_testing_forms, poly_names):
     y_hat = []
@@ -125,35 +143,26 @@ def train_all_models(base_datas, x_training_forms, x_testing_forms, poly_names):
     y_testing = base_datas[3]
     for i in range(0, len(x_training_forms)):
         # Thetas is initialized to a list of 1
-        thetas = [1] * (x_training_forms[i].shape[1] + 1)
+        thetas = recuperate_thetas(poly_names[i], x_training_forms[i].shape[1] + 1)
         # We try to obtain alpha adapted to each form
         alpha = get_alpha(poly_names[i])
-        max_iter = 100
-        # First, we check if the model is already present in models.csv or not
-        if (check_if_model_exist_in_file(poly_names[i], alpha, max_iter) == False):
-            continue
+        max_iter = 1000
         # We train the model
+        print("\033[33mTraining form {} for alpha {} and max_iter {}\033[0m".format(poly_names[i], alpha, max_iter))
         form_lr = MyLR(thetas, alpha=alpha, max_iter=max_iter)
         form_lr.fit_(x_training_forms[i], y_training)
-        # Obtaining y_hat with training set and corresponding MSE
-        y_hat_training = form_lr.predict_(x_training_forms[i])
-        training_mse = form_lr.mse_(y_training, y_hat_training)
-        if np.isnan(training_mse):
-            continue
-        # Obtaining y_hat for testing set only and corresponding MSE
-        y_hat_testing = form_lr.predict_(x_testing_forms[i])
-        testing_mse = form_lr.mse_(y_testing, y_hat_testing)
-        if np.isnan(testing_mse):
-            continue
         # We seek the global MSE
         x_global = np.concatenate([x_training_forms[i], x_testing_forms[i]])
         y_global = np.concatenate([y_training, y_testing])
         y_hat_global = form_lr.predict_(x_global)
         global_mse = form_lr.mse_(y_global, y_hat_global)
-        if np.isnan(global_mse):
+        if np.isnan(global_mse) or global_mse == float("inf"):
+            print('\033[91mError in calculation (try to reduce alpha)\033[0m')
             continue
         # We add the model to file
-        add_model_to_file(poly_names[i], global_mse, training_mse, testing_mse, x_testing_forms[i], form_lr.thetas, alpha, max_iter)
+        if check_if_dataset_is_better(poly_names[i], global_mse, alpha) is True:
+            add_model_to_file(poly_names[i], global_mse, form_lr.thetas, alpha)
+        print('\033[92mOK\033[0m')
 
 
 if __name__ == '__main__':
@@ -161,4 +170,8 @@ if __name__ == '__main__':
     create_model_file()
     splited_datas = data_spliter(x, y, 0.8)
     poly_names, x_training_forms, x_testing_forms = get_poly_forms(splited_datas[0], splited_datas[1], 4)
+    crossed_form, x_cross_train, x_cross_test = get_crossed_form(splited_datas[0], splited_datas[1])
+    poly_names.extend(crossed_form)
+    x_training_forms.extend(x_cross_train)
+    x_testing_forms.extend(x_cross_test)
     train_all_models(splited_datas, x_training_forms, x_testing_forms, poly_names)
