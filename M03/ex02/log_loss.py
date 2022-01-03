@@ -6,12 +6,8 @@ def logistic_predict_(x, theta):
     if not isinstance(theta, np.ndarray) or theta.ndim != 2 or theta.shape[0] != x.shape[1] + 1 or theta.shape[1] != 1:
         return None
     X = np.insert(x, 0, 1.0, axis=1)
-    return 1 / (1 + np.exp(np.dot(-X, theta)))
+    return 1 / (1 + np.exp(-X @ theta))
 
-#The exercice precise that epsilon is used to avoid log(0) error (because it's not defined)
-#Epsilon is a residual value added to y_hat in this case, but the results given as examples
-#don't seems to add epsilon to y_hat.
-#To obtain same results as examples, delete eps values from return or set eps to 0.0
 def log_loss_(y, y_hat, eps=1e-15):
     if not isinstance(y, np.ndarray) or y.ndim != 2 or y.shape[1] != 1:
         return None
@@ -19,7 +15,7 @@ def log_loss_(y, y_hat, eps=1e-15):
         return None
     if not isinstance(eps, float):
         return None
-    return - (np.sum(y * np.log(eps + y_hat) + (1 - y) * np.log(eps + 1 - y_hat)) / y.shape[0])
+    return (float)(1/y.shape[0])*(((-y).T @ np.log(y_hat + eps))-((1-y).T @ np.log(1 - y_hat + eps))).item()
 
 y1 = np.array([[1]])
 x1 = np.array([[4]])

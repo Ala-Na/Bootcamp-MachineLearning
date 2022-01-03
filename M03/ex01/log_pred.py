@@ -6,7 +6,7 @@ def logistic_predict_(x, theta):
     if not isinstance(theta, np.ndarray) or theta.ndim != 2 or theta.shape[0] != x.shape[1] + 1 or theta.shape[1] != 1:
         return None
     X = np.insert(x, 0, 1.0, axis=1)
-    return 1 / (1 + np.exp(np.dot(-X, theta)))
+    return 1 / (1 + np.exp(-X @ theta))
 
 x = np.array([[4]])
 theta = np.array([[2], [0.5]])
