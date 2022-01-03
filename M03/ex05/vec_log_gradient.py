@@ -8,8 +8,9 @@ def vec_log_gradient(x, y, theta):
     if not isinstance(theta, np.ndarray) or theta.ndim != 2 or theta.shape[0] != x.shape[1] + 1 or theta.shape[1] != 1:
         return None
     X = np.insert(x, 0, 1.0, axis=1)
-    hypX = 1 / (1 + np.exp(np.dot(-X, theta)))
-    return (np.dot(X.transpose(), (hypX - y))) / x.shape[0]
+    hypX =  1 / (1 + np.exp(-X @ theta))
+    #hypX = 1 / (1 + np.exp(np.dot(-X, theta)))
+    return (X.transpose() @ (hypX - y)) / x.shape[0]
 
 # Example 1:
 y1 = np.array([[1]])
