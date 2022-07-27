@@ -1,7 +1,7 @@
 # Bootcamp-MachineLearning
 
 <p align="center">
-<img width="160" height="160" src="https://user-images.githubusercontent.com/67599180/181341461-cc1d8306-01fa-49ba-ac98-6a34a63b7750.png">
+<img width="200" height="160" src="https://user-images.githubusercontent.com/67599180/181341461-cc1d8306-01fa-49ba-ac98-6a34a63b7750.png">
  </p>
 
 Bootcamp proposed by 42AI association, now available as a after common-core project at Paris 42 school.
