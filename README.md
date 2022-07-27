@@ -8,8 +8,10 @@ Bootcamp proposed by 42AI association, now available as a after common-core proj
 
 Please, find more informations and credits at [42AI corresponding page](https://github.com/42-AI/bootcamp_machine-learning)
 
+
 ## Purpose
 A one week bootcamp to learn machine learning using [Stanford massive open online course on Machine Learning](https://www.coursera.org/learn/machine-learning/home/week/1) as main resource.
+
 
 ## Curriculum
 
