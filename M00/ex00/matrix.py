@@ -9,7 +9,7 @@ class Matrix():
             return self.__init_from_list__(data)
         print("Data given to matrix class is not compatible")
         return None
-        
+
     def __init_from_list__(self, data):
         len_row = len(data[0])
         for row in data:
@@ -46,7 +46,7 @@ class Matrix():
         return matrix
 
     __radd__ = __add__
-        
+
     def __sub__(self, to_sub):
         if not isinstance(to_sub, Matrix) or self.shape != to_sub.shape :
             print("Can't sub matrix of differents dimensions")
@@ -125,6 +125,7 @@ class Matrix():
                 sub_matrix.append(self.data[elem][column])
             matrix.append(sub_matrix)
         return matrix
+
 
 class Vector(Matrix):
 

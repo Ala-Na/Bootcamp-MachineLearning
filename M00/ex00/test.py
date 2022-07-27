@@ -1,6 +1,8 @@
 from matrix import Matrix
 from matrix import Vector
 
+print("My tests\n------")
+
 matrix = Matrix((3, 2))
 print(matrix.__str__())
 
@@ -34,3 +36,33 @@ v3 = Vector([[1, 2], [3, 4]])
 
 v4 = v1.dot(Vector([[1, 2, 3]]))
 print(v4)
+
+print("\nSubject test\n--------------")
+
+m1 = Matrix([[0.0, 1.0], [2.0, 3.0], [4.0, 5.0]])
+print(m1.shape)
+print(m1.T())
+print(m1.T().shape, end="\n\n")
+
+m1 = Matrix([[0., 2., 4.], [1., 3., 5.]])
+print(m1.shape)
+print(m1.T())
+print(m1.T().shape, end="\n\n")
+
+m1 = Matrix([[0.0, 1.0, 2.0, 3.0],
+[0.0, 2.0, 4.0, 6.0]])
+m2 = Matrix([[0.0, 1.0],
+[2.0, 3.0],
+[4.0, 5.0],
+[6.0, 7.0]])
+
+print(m1 * m2, end="\n\n")
+
+m1 = Matrix([[0.0, 1.0, 2.0],
+[0.0, 2.0, 4.0]])
+v1 = Vector([[1], [2], [3]])
+print(m1 * v1, end="\n\n")
+
+v1 = Vector([[1], [2], [3]])
+v2 = Vector([[2], [4], [8]])
+print(v1 + v2)
