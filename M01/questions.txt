@@ -1,0 +1,30 @@
+1. What is a hypothesis and what is its goal?
+
+Hypothesis, also called function, is a learning algoritm. It's goal is to
+predict the results of a training set as close as possible of reality. It can
+be use to predict future results.
+
+2. What is the loss function and what does it represent?
+
+Loss function represents the distance between reality and prediction :
+It help to determine if a model is good or not.
+
+
+3. What is Linear Gradient Descent and what does it do? (hint: you have to talk
+about J, its gradient and the theta parameters...)
+
+The linear gradient descent is an algorithm which tend to affinate thetas parameters
+(or coefficients, or weights) which can be adjusted to make predictions more accurate.
+It also calculate the
+
+4. What happens if you choose a learning rate that is too large?
+
+When the learning rate alpha is too big, gradient descent may not occurs or,
+less often, make a convergence happen quite slowly.
+
+5. What happens if you choose a very small learning rate, but still a sufficient number
+of cycles?
+
+When the learning rate is quite small, it make the convergence happen slowly. 
+
+6. Can you explain MSE and what it measures?
