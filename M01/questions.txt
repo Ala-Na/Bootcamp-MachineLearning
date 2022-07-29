@@ -19,12 +19,12 @@ It also calculate the
 
 4. What happens if you choose a learning rate that is too large?
 
-When the learning rate alpha is too big, gradient descent may not occurs or,
-less often, make a convergence happen quite slowly.
+When the learning rate alpha is too big, gradient descent may not occurs as
+local minimum is missed or, less often, it can make a convergence happen quite slowly.
 
 5. What happens if you choose a very small learning rate, but still a sufficient number
 of cycles?
 
-When the learning rate is quite small, it make the convergence happen slowly. 
+When the learning rate is quite small, it make the convergence happen slowly.
 
 6. Can you explain MSE and what it measures?
