@@ -4,7 +4,7 @@ import math
 class TinyStatistician():
 
     def mean(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+        if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 1 or x.shape[0] == 0:
             print("Input is not a non-empty numpy array of dimension 1")
             return None
         res = 0
@@ -14,7 +14,7 @@ class TinyStatistician():
         return res
 
     def median(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+        if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 1 or x.shape[0] == 0:
             print("Input is not a non-empty numpy array of dimension 1")
             return None
         x.sort()
@@ -27,7 +27,7 @@ class TinyStatistician():
         return float(x[ind])
 
     def quartile(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+        if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 1 or x.shape[0] == 0:
             print("Input is not a non-empty numpy array of dimension 1")
             return None
         x.sort()
@@ -46,7 +46,7 @@ class TinyStatistician():
     # Examples in subject give numpy results but subject ask for true definiton
     # Here it's true mathematical definition
     def percentile(self, x, p):
-        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+        if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 1 or x.shape[0] == 0:
             print("Input is not a non-empty numpy array of dimension 1")
             return None
         elif not isinstance(p, int) or p > 100 or p <= 0:
@@ -61,7 +61,7 @@ class TinyStatistician():
 
 
     def var(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+        if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 1 or x.shape[0] == 0:
             print("Input is not a non-empty numpy array of dimension 1")
             return None
         mean = self.mean(x)
@@ -72,10 +72,14 @@ class TinyStatistician():
         return res
 
     def std(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+        if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 1 or x.shape[0] == 0:
             print("Input is not a non-empty numpy array of dimension 1")
             return None
         var = self.var(x)
         return math.sqrt(var)
 
 
+# numpy uses a different definition of percentile, it does linear
+# interpolation between the two closest list element to the percentile.
+# Be sure to understand the difference between the population and the
+# sample definition for the statistic metrics.

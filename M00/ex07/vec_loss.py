@@ -1,16 +1,27 @@
 import numpy as np
 
 def loss_(y, y_hat):
-    if not isinstance(y, np.ndarray) or y.ndim != 2 or y.shape[1] != 1:
+    '''Computes the half mean squared error of two non-empty numpy.array, without any for loop.
+    The two arrays must have the same dimensions.
+    Args:
+    y: has to be an numpy.array, a vector.
+    y_hat: has to be an numpy.array, a vector.
+    Returns:
+    The half mean squared error of the two vectors as a float.
+    None if y or y_hat are empty numpy.array.
+    None if y and y_hat does not share the same dimensions.
+    Raises:
+    This function should not raise any Exceptions.
+    '''
+    if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[1] != 1 or y.shape[0] == 0:
         return None
-    elif not isinstance(y_hat, np.ndarray) or y_hat.shape != y.shape:
+    elif not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.shape != y.shape:
         return None
-    res = 0
-    for yi, yi_hat in zip(y, y_hat):
-        res += (yi_hat[0] - yi[0]) ** 2
-    return res / ( 2 * y.shape[0])
-
-X = np.array([[0],[ 15],[ -9],[ 7],[ 12],[ 3],[ -21]])
-Y = np.array([[2],[ 14],[ -13],[ 5],[ 12],[ 4],[ -19]])
-print(loss_(X, Y))
-print(loss_(X, X))
+    try:
+        res = 0
+        for yi, yi_hat in zip(y, y_hat):
+            res += (yi_hat[0] - yi[0]) ** 2
+        return res / ( 2 * y.shape[0])
+    except:
+        print("Something went wrong")
+        return None

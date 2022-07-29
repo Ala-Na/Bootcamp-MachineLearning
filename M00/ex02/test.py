@@ -2,7 +2,10 @@
 import numpy as np
 from prediction import simple_predict
 
+print(simple_predict.__doc__)
+
 x = np.arange(1,6).reshape(-1, 1)
+print(x)
 theta1 = np.array([[5],[0]])
 res = simple_predict(x, theta1)
 print(res)
