@@ -18,10 +18,7 @@ def loss_(y, y_hat):
     elif not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.shape != y.shape:
         return None
     try:
-        res = 0
-        for yi, yi_hat in zip(y, y_hat):
-            res += (yi_hat[0] - yi[0]) ** 2
-        return res / ( 2 * y.shape[0])
+        return np.sum(((y - y_hat) ** 2) / (2 * y.shape[0]))
     except:
         print("Something went wrong")
         return None
