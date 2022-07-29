@@ -12,18 +12,18 @@ print(m1.__str__())
 m2 = Matrix([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0]])
 print(m2.__str__())
 
-m3 = Matrix(m1 - m2)
+m3 = m1 - m2
 print(m3)
 
-m4 = Matrix(m1 * Matrix([[2.0], [2.0]]))
+m4 = m1 * Matrix([[2.0], [2.0]])
 print(m4)
 
 m5 = Matrix([[1.0, 1.0, 1.0], [1.0, 1.0, 1.0]])
 
-m6 = Matrix(m1 * m5)
+m6 = m1 * m5
 print(m6)
 
-m7 = Matrix(matrix.T())
+m7 = matrix.T()
 print(m7)
 
 v1 = Vector([[1, 2, 3]])
@@ -63,6 +63,22 @@ m1 = Matrix([[0.0, 1.0, 2.0],
 v1 = Vector([[1], [2], [3]])
 print(m1 * v1, end="\n\n")
 
+print("\nVector test\n-------------")
 v1 = Vector([[1], [2], [3]])
 v2 = Vector([[2], [4], [8]])
+v3 = Vector([[1, 2, 3]])
+print(v1)
+print(v2)
+print(v3)
 print(v1 + v2)
+print(v1 - v2)
+print(v1 * v2)
+print(v1 * v3)
+print(v1 / v2)
+print(1 * v1)
+print(v1 / 2)
+print(2 / v1)
+m1 = Matrix([[1, 2, 3]])
+print(v1 * m1)
+print(m1 + v3)
+print(v3 + m1)

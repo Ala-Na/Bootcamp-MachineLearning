@@ -1,9 +1,12 @@
 import copy
 
+from numpy import isin
+
 class Matrix():
 
     def __init__(self, data):
-        if isinstance(data, tuple) and len(data) == 2:
+        if isinstance(data, tuple) and len(data) == 2 \
+            and isinstance(data[0], int) and isinstance(data[1], int):
             return self.__init_from_tuple__(data)
         elif isinstance(data, list):
             return self.__init_from_list__(data)
@@ -17,7 +20,7 @@ class Matrix():
                 print("Data given to matrix class is not compatible")
                 return None
             for elem in row:
-                if not isinstance(elem, float):
+                if not (isinstance(elem, float) or isinstance(elem, int)):
                     print("Data given to matrix class is not compatible")
                     return None
         self.data = data
@@ -43,7 +46,7 @@ class Matrix():
         for row in range(self.shape[0]):
             for column in range(self.shape[1]):
                 matrix[row][column] += to_add.data[row][column]
-        return matrix
+        return Matrix(matrix)
 
     __radd__ = __add__
 
@@ -55,9 +58,17 @@ class Matrix():
         for row in range(self.shape[0]):
             for column in range(self.shape[1]):
                 matrix[row][column] -= to_sub.data[row][column]
-        return matrix
+        return Matrix(matrix)
 
-    __rsub__= __sub__
+    def __rsub__(self, to_sub):
+        if not isinstance(to_sub, Matrix) or self.shape != to_sub.shape :
+            print("Can't sub matrix of differents dimensions")
+            return None
+        matrix = copy.deepcopy(self.data)
+        for row in range(self.shape[0]):
+            for column in range(self.shape[1]):
+                matrix[row][column] = to_sub.data[row][column] - matrix[row][column]
+        return Matrix(matrix)
 
     def __truediv__(self, div):
         if not isinstance(div, int) and not isinstance(div, float):
@@ -67,7 +78,7 @@ class Matrix():
         for row in range(self.shape[0]):
             for column in range(self.shape[1]):
                 matrix[row][column] /= div
-        return matrix
+        return Matrix(matrix)
 
     def __rtruediv__(self, div):
         print("Can't divide by matrix")
@@ -79,7 +90,7 @@ class Matrix():
             for row in range(self.shape[0]):
                 for column in range(self.shape[1]):
                     matrix[row][column] *= mul
-            return matrix
+            return Matrix(matrix)
         elif isinstance(mul, Matrix) and mul.shape[1] == 1 and mul.shape[0] == self.shape[1]:
             return self.__mul_by_vector__(mul)
         elif isinstance(mul, Matrix) and self.shape[1] == mul.shape[0]:
@@ -95,7 +106,7 @@ class Matrix():
                 value += self.data[row][column] * mul.data[column][0]
             sub_matrix =[value]
             matrix.append(sub_matrix)
-        return matrix
+        return Matrix(matrix)
 
     def __mul_by_matrix__(self, mul):
         matrix = []
@@ -107,7 +118,19 @@ class Matrix():
                     value += self.data[row][column] * mul.data[column][vect]
                 sub_matrix.append(value)
             matrix.append(sub_matrix)
-        return matrix
+        return Matrix(matrix)
+
+    def __rmul__(self, mul):
+        if isinstance(mul, int) or isinstance(mul, float):
+            matrix = copy.deepcopy(self.data)
+            for row in range(self.shape[0]):
+                for column in range(self.shape[1]):
+                    matrix[row][column] *= mul
+            return Matrix(matrix)
+        if isinstance(mul, Vector) or isinstance(mul, Matrix):
+            return mul.__mul__(self)
+        print("Can't multiply matrix by multiplicator.")
+        return None
 
     def __str__(self):
         if self.data and self.shape:
@@ -124,7 +147,7 @@ class Matrix():
             for elem in range(self.shape[0]):
                 sub_matrix.append(self.data[elem][column])
             matrix.append(sub_matrix)
-        return matrix
+        return Matrix(matrix)
 
 
 class Vector(Matrix):
@@ -173,3 +196,70 @@ class Vector(Matrix):
                 for sub_elem, sub_elem_ot in zip(elem, elem_ot):
                     res += sub_elem * sub_elem_ot
         return res
+
+    def __add__(self, to_add):
+        matrix = Matrix(self.data) + Matrix(to_add.data)
+        if isinstance(matrix, Matrix):
+            return Vector(matrix.data)
+        return None
+
+    __radd__ = __add__
+
+    def __sub__(self, to_sub):
+        matrix = Matrix(self.data) - Matrix(to_sub.data)
+        if isinstance(matrix, Matrix):
+            return Vector(matrix.data)
+        return None
+
+
+    def __rsub__(self, to_sub):
+        matrix = Matrix(to_sub.data) - Matrix(self.data)
+        if isinstance(matrix, Matrix):
+            return Vector(matrix.data)
+        return None
+
+    def __truediv__(self, div):
+        matrix = Matrix(self.data) / div
+        if isinstance(matrix, Matrix):
+            return Vector(matrix.data)
+        return None
+
+    def __rtruediv__(self, div):
+        print('Can\'t divide by vector.')
+        return None
+
+    def __mul__(self, mul):
+        if isinstance(mul, Vector) or isinstance(mul, Matrix):
+            matrix = Matrix(self.data) * Matrix(mul.data)
+            if isinstance(matrix, Matrix) and (matrix.shape[0] == 1 or matrix.shape[1] == 1):
+                return Vector(matrix.data)
+            elif isinstance(matrix, Matrix):
+                print("Return a matrix instead of a vector !")
+                return matrix
+            return None
+        if isinstance(mul, int) or isinstance(mul, float):
+            matrix = Matrix(self.data) * mul
+            if isinstance(matrix, Matrix):
+                return Vector(matrix.data)
+            return None
+        print('Can\'t perform multiplication with vector.')
+        return None
+
+    def __rmul__(self, mul):
+        if isinstance(mul, Vector) or isinstance(mul, Matrix):
+            matrix= Matrix(mul.data) * Matrix(self.data)
+            if isinstance(matrix, Matrix) and (matrix.shape[0] == 1 or matrix.shape[1] == 1):
+                return Vector(matrix.data)
+            elif isinstance(matrix, Matrix):
+                print("Return a matrix instead of a vector !")
+                return matrix
+            return None
+        if isinstance(mul, int) or isinstance(mul, float):
+            matrix = Matrix(self.data) * mul
+            if isinstance(matrix, Matrix):
+                return Vector(matrix.data)
+            return None
+        print('Can\'t perform multiplication with vector.')
+        return None
+
+
