@@ -4,8 +4,8 @@ import math
 class TinyStatistician():
 
     def mean(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1:
-            print("Input is not a numpy array of dimension 1")
+        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+            print("Input is not a non-empty numpy array of dimension 1")
             return None
         res = 0
         for elem in x:
@@ -14,8 +14,8 @@ class TinyStatistician():
         return res
 
     def median(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1:
-            print("Input is not a numpy array of dimension 1")
+        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+            print("Input is not a non-empty numpy array of dimension 1")
             return None
         x.sort()
         if x.shape[0] % 2 == 0:
@@ -27,8 +27,8 @@ class TinyStatistician():
         return float(x[ind])
 
     def quartile(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1:
-            print("Input is not a numpy array of dimension 1")
+        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+            print("Input is not a non-empty numpy array of dimension 1")
             return None
         x.sort()
         if (x.shape[0] / 4) % 2 == 0:
@@ -41,9 +41,13 @@ class TinyStatistician():
             third_ind = int(((x.shape[0]) * 3) / 4)
         return [float(x[first_ind]), float(x[third_ind])]
 
+    # It's not clear if we're suppose to imitate numpy comportement or
+    # use percentile calculus definition (like quartiles)
+    # Examples in subject give numpy results but subject ask for true definiton
+    # Here it's true mathematical definition
     def percentile(self, x, p):
-        if not isinstance(x, np.ndarray) or x.ndim != 1:
-            print("Input is not a numpy array of dimension 1")
+        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+            print("Input is not a non-empty numpy array of dimension 1")
             return None
         elif not isinstance(p, int) or p > 100 or p <= 0:
             print("Percentile is incompatible")
@@ -55,9 +59,10 @@ class TinyStatistician():
             per_ind = int(x.shape[0] * p / 100)
         return float(x[per_ind])
 
+
     def var(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1:
-            print("Input is not a numpy array of dimension 1")
+        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+            print("Input is not a non-empty numpy array of dimension 1")
             return None
         mean = self.mean(x)
         res = 0
@@ -67,20 +72,10 @@ class TinyStatistician():
         return res
 
     def std(self, x):
-        if not isinstance(x, np.ndarray) or x.ndim != 1:
-            print("Input is not a numpy array of dimension 1")
+        if not isinstance(x, np.ndarray) or x.ndim != 1 or x.shape[0] == 0:
+            print("Input is not a non-empty numpy array of dimension 1")
             return None
         var = self.var(x)
         return math.sqrt(var)
 
 
-ts = TinyStatistician()
-a = np.array([1, 42, 300, 10, 59])
-print(ts.mean(a))
-print(ts.median(a))
-print(ts.quartile(a))
-print(ts.percentile(a, 10))
-print(ts.percentile(a, 28))
-print(ts.percentile(a, 83))
-print(ts.var(a))
-print(ts.std(a))
