@@ -19,7 +19,7 @@ It also calculate the
 
 4. What happens if you choose a learning rate that is too large?
 
-When the learning rate alpha is too big, gradient descent may not occurs as
+When the learning rate alpha is too big, gradient descent may not occurs (and may increase) as
 local minimum is missed or, less often, it can make a convergence happen quite slowly.
 
 5. What happens if you choose a very small learning rate, but still a sufficient number
