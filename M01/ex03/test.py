@@ -24,6 +24,9 @@ print(lr1.loss_elem_(y, y_hat))
 print(lr1.loss_(y, y_hat), end="\n\n")
 # Output:
 #195.34539903032385
+
+# CAN TAKE A WHILE
+
 # Example 1.0:
 lr2 = MyLR(np.array([[1], [1]]), 5e-8, 1500000)
 lr2.fit_(x, y)
