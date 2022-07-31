@@ -9,13 +9,11 @@ be use to predict future results.
 Loss function represents the distance between reality and prediction :
 It help to determine if a model is good or not.
 
-
 3. What is Linear Gradient Descent and what does it do? (hint: you have to talk
 about J, its gradient and the theta parameters...)
 
 The linear gradient descent is an algorithm which tend to affinate thetas parameters
 (or coefficients, or weights) which can be adjusted to make predictions more accurate.
-It also calculate the
 
 4. What happens if you choose a learning rate that is too large?
 
@@ -26,5 +24,9 @@ local minimum is missed or, less often, it can make a convergence happen quite s
 of cycles?
 
 When the learning rate is quite small, it make the convergence happen slowly.
+If the number of cycle is sufficient, convergence may still occurs.
 
 6. Can you explain MSE and what it measures?
+
+Mean square error is a calculus used in ML to evaluate the precision of a model.
+It calculate the mean difference between prediction and reality across a whole dataset.
