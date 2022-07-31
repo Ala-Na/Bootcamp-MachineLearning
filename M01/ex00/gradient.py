@@ -26,8 +26,13 @@ def simple_gradient(x, y, theta):
     try:
         X = np.insert(x, 0, 1.0, axis = 1)
         y_hat = np.dot(X, theta)
-        j0 = np.sum(y_hat - y) / x.shape[0]
-        j1 = np.sum((y_hat - y) * x) / x.shape[0]
+        j0 = 0
+        j1 = 0
+        for i in range(y.shape[0]):
+            j0 += y_hat[i] - y[i]
+            j1 += (y_hat[i] - y[i]) * x[i]
+        j0 /= x.shape[0]
+        j1 /= x.shape[0]
         return np.asarray([j0, j1]).reshape((2, 1))
     except:
         print("Something went wrong.")
