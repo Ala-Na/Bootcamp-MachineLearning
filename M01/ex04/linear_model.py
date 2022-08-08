@@ -27,7 +27,7 @@ def draw_hypothesis(x, y, y_hat):
         print("Something went wrong")
 
 def evolution_loss_function(x, y):
-    try!
+    try:
         plt.grid(visible='yes')
         i = 0
         for theta_0 in np.linspace(80, 100, 6):
