@@ -1,0 +1,62 @@
+1. What is the main (obvious) difference between univariate and multivariate linear
+regression?
+
+The univariate linear regression take only one feature into account while the multivariate
+linear regression take more features to establish the prediction model.
+Example univariate: Taking the size in m2 of a house to establish it's price
+Example multivariate: Taking the size in m2, the number of rooms, the presence of 
+a pool, etc... to establish a house price
+
+2. Is there a minimum number of variables needed to perform a multivariate linear
+regression?
+
+Yes, at least 2 variables which must be independent
+
+3. Is there a maximum number of variables needed to perform a multivariate linear
+regression? In theory and in practice?
+
+In theory, a multivariate linear regression can use as many features as whished.
+In pratice, it's complicated to train a model with a big number of features (slow, 
+may need some adjustments like scaling, ...) and preferable to choose the more 
+pertinents features.
+
+4. Is there a difference between univariate and multivariate linear regression in terms
+of performance evaluation?
+
+It depends on the model, as it can depends only on one variable. But in most cases,
+a model can depends on many variable which make multivariate linear regression more
+precise.
+
+5. What does it mean geometrically to perform a multivariate gradient descent with
+two variables?
+
+I'm not sure of this question... I guess it means we can make a 3D representation
+of this model. Or maybe that the gradient descent will have a convexe representation
+(bowl shape).
+
+6. Can you explain what is overfitting?
+
+Overfitting is when a model fit too well a training set : The loss or mse is almost null,
+and on a graph, the prediction cross almost each data of the training set.
+If it seems great, it's not, because the prediction can't be generalized to new data.
+
+7. Can you explain what is underfitting?
+
+The opposite of overfitting : When a prediction model is too far off the true results.
+The model can't be applied for actual prediction.
+
+8. Why is it important to split the data set in a training and a test set?
+
+Spliting data to training and testing set is a way to check for overfitting : We 
+use part of the data set to train our model (training set) and check if it fit well 
+for new data (testing set).
+
+9. If a model overfits, what will happen when you compare its performance on the
+training set and the test set?
+
+The model can't be accurately applied to the testing set.
+
+10. If a model underfits, what do you think will happen when you compare its perfor-
+mance on the training set and the test set?
+
+The performance on both will be poor.
