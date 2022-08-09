@@ -20,6 +20,8 @@ print(mylr.loss_elem_(Y, Y_hat), '\n')
 print(mylr.loss_(Y, Y_hat), '\n')
 # Output:1875.0
 
+print('Can take time...\n')
+
 # Example 3:
 mylr.alpha = 1.6e-4
 mylr.max_iter = 200000

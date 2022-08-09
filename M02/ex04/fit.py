@@ -45,21 +45,24 @@ def fit_(x, y, theta, alpha, max_iter):
     Raises:
     This function should not raise any Exception.
     """
-    if not isinstance(x, np.ndarray) or x.ndim != 2:
+    if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[0] == 0 or x.shape[1] == 0:
         return None
-    if not isinstance(y, np.ndarray) or y.ndim != 2 or y.shape != (x.shape[0], 1):
+    if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.shape != (x.shape[0], 1):
         return None
-    if not isinstance(theta, np.ndarray) or theta.shape != (x.shape[1] + 1, 1):
+    if not isinstance(theta, np.ndarray) or not np.issubdtype(theta.dtype, np.number) or theta.shape != (x.shape[1] + 1, 1):
         return None
     if not isinstance(alpha, float) or not isinstance(max_iter, int):
         return None
-    for i in range(0, max_iter):
-        curr_gradient = gradient(x, y, theta)
-        new_theta = []
-        for val in range(0, theta.shape[0]):
-            new_theta.append((float)(theta[val][0] - alpha * curr_gradient[val][0]))
-        theta = np.asarray(new_theta).reshape(theta.shape)
-    return theta
+    try:
+        for i in range(0, max_iter):
+            curr_gradient = gradient(x, y, theta)
+            new_theta = []
+            for val in range(0, theta.shape[0]):
+                new_theta.append((float)(theta[val][0] - alpha * curr_gradient[val][0]))
+            theta = np.asarray(new_theta).reshape(theta.shape)
+        return theta
+    except:
+        return None
 
 # • You can create more training data by generating an x array
 # with random values and computing the corresponding y vector as
