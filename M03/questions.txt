@@ -1,0 +1,39 @@
+1. Why do we use logistic hypothesis for a classfication problem rather than a linear
+hypothesis?
+
+Classification problem can be seen as a binary true/false question : Does it belongs to this class or not ?
+To solve this kind of problem, we use logistic hypothesis because it keep the result
+between 0 and 1 which is easier to discriminate between true(1)/false(0) classification problem.
+
+2. What is the decision boundary?
+
+It's the boundary or limit separating true and false results as, in pratice, we 
+obtains results between 0 and 1. When represented on a graph, it's not always a straight line.
+
+3. In the case we decide to use a linear hypothesis to tackle a classification problem,
+why the classification of some data points can be modified by considering more
+examples (for example, extra data points with extrem ordinate)?
+
+Not sure of the question here... I guess it's because adding new data in the set
+will considerably modify the prediction model which would be unstable.
+
+4. In a one versus all classification approach, how many logisitic regressor do we need
+to distinguish between N classes?
+
+We need to perform as many monoclass logistic regression as there is classes, as 
+we need to determine if each data belongs to each class individually
+
+
+5. Can you explain the difference between accuracy and precision? What is the type
+I and type II errors?
+
+Accuracy = Total of correct predictions (Can I trust this model results ?)
+Prediction = Total of true positives results among all predicted positive results (Can I trust this model positive results ?)
+Type I error = False Positive, or incorrect positive result amongs prediction (it should be negative)
+Type II error = False Negative, or incorrect negative result amongs prediction (it should be positive)
+
+6. What is the interest of the F1-score?
+
+Calculate accuracy of a prediction while taking false positives and false negative into account.
+Biggest value possible = 1 (perfect)
+Lowest value possible = 0 

@@ -51,3 +51,8 @@ print(confusion_matrix_(y, y_hat, labels=['bird', 'dog'], df_option=True))
 #bird dog
 #bird 0 0
 #dog 0 2
+
+print('\n')
+
+print(confusion_matrix_(y, y_hat, labels=['truc'], df_option=True))
+
