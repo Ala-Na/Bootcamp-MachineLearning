@@ -14,9 +14,9 @@ def iterative_l2(theta):
 		return None
 	try:
 		res = 0
-		for i in range(theta.shape[0]):
-			res += theta[i][0] ** 2
-		return res
+		for i in range(1, theta.shape[0]):
+			res += theta[i] ** 2
+		return res.item()
 	except:
 		return None
 
@@ -33,6 +33,7 @@ def l2(theta):
 	if not isinstance(theta, np.ndarray) or not np.issubdtype(theta.dtype, np.number) or theta.ndim != 2 or theta.size == 0 or theta.shape[1] != 1:
 		return None
 	try:
+		theta[0][0] = 0
 		return np.sum(theta ** 2)
 	except:
 		return None
