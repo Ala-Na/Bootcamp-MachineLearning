@@ -40,7 +40,7 @@ def recuperate_thetas(best):
 def recuperate_lr(best, thetas):
     try:
         alpha = ((best['Alpha']).values)[0]
-        return MyLR(thetas, alpha=alpha, max_iter=1000000)
+        return MyLR(thetas, alpha=alpha, max_iter=100000)
     except:
         print('something went wrong with recuperate_lr function')
         return None
