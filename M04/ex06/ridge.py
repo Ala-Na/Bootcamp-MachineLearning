@@ -7,9 +7,6 @@ class MyRidge(MyLR):
 	"""
 	
 	def __init__(self, thetas, alpha=0.001, max_iter=1000, lambda_=0.5):
-	self.alpha = alpha
-	self.max_iter = max_iter
-	self.thetas = thetas
-	self.lambda_ = lambda_
-	... Your code here ...
-	... other methods ...
+		assert isinstance(lambda_, float) and lambda_ >= 0
+		super(MyRidge, self).__init__(thetas, alpha, max_iter)
+		self.lambda_ = lambda_
