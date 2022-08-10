@@ -23,9 +23,11 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
 		return None
 	if labels is not None and not isinstance(labels, list):
 		return None
+	if not isinstance(df_option, bool):
+		return None
 	try:
 		if labels is None:
-			y_total = np.concatenate((y_true, y_hat))
+			y_total = np.stack((y_true, y_hat))
 			labels = np.unique(y_total)
 		confusion_matrix = np.zeros((len(labels), len(labels)))
 		for i in range(len(labels)):
