@@ -35,7 +35,6 @@ def confusion_matrix_(y_true, y_hat, labels=None, df_option=False):
 				confusion_matrix[i, j] = np.sum((y_true == labels[i]) & (y_hat == labels[j]))
 		if df_option:
 			return pd.DataFrame(confusion_matrix, index=labels, columns=labels)
-		else:
-			return confusion_matrix
+		return confusion_matrix
 	except:
 		return None
