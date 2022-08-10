@@ -36,7 +36,7 @@ def reg_log_loss_(y, y_hat, theta, lambda_):
 	try:
 		one_vec = np.ones((1, y.shape[1]))
 		m = y.shape[0]
-		return ((-1 / m) * (y.T.dot(np.log(np.clip(y_hat, eps, 1 - eps))) + (one_vec - y).T.dot(np.log(np.clip(one_vec - y_hat, eps, 1 - eps)))) + ((lambda_ / (2 * m)) * l2(theta))).item()
+		return ((-1 / m) * (y.T.dot(np.log(y_hat + eps)) + (one_vec - y).T.dot(np.log(one_vec - y_hat + eps))) + ((lambda_ / (2 * m)) * l2(theta))).item()
+		# Note : probably better to use np.clip(y_hat, eps, 1 - eps) inside np.log(), but subject result obtained with previous formula
 	except:
 		return None	
-
