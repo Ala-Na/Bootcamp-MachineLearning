@@ -117,7 +117,7 @@ def get_poly_forms(x_training, x_testing, max_power):
 def add_model_to_file(name, global_mse, thetas, alpha):
     try:
         df = pd.DataFrame()
-        df = df.append({'Form' : name,'Global MSE' : global_mse, \
+        df = df.append({'Form' : name, 'Global MSE' : global_mse, \
             'Thetas after fit' : thetas[:, 0].tolist(), 'Alpha' : alpha}, ignore_index=True)
         df.to_csv('models.csv', mode='a', header=False)
     except:
