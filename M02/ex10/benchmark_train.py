@@ -2,9 +2,9 @@ import numpy as np
 import os
 import csv
 import pandas as pd
-import matplotlib.pyplot as plt
-from pandas.core.frame import DataFrame
 from mylinearregression import MyLinearRegression as MyLR
+from data_spliter import data_spliter
+from polynomial_model import add_polynomial_features
 
 # Utils functions for files management
 
@@ -19,38 +19,26 @@ def extract_datas(filename):
         return None
 
 def create_model_file():
-    if (os.path.isfile('models.csv')):
-        return
-    try:
-        header = ['', 'Form', 'Global MSE', 'Thetas after fit', 'Alpha']
-        f = open('models.csv', 'w')
-        writer = csv.writer(f)
-        writer.writerow(header)
-        f.close()
-    except:
-        print('Something went wrong with create_model_file function')
+	try:
+		if (os.path.isfile('models.csv')):
+			os.remove('models.csv')
+		header = ['Form', 'Loss on testing set', 'MSE on testing set', 'Thetas after fit', 'Alpha']
+		f = open('models.csv', 'w')
+		writer = csv.writer(f)
+		writer.writerow(header)
+		f.close()
+	except:
+		print('Something went wrong with create_model_file function')
 
-# Data splitter to obtain testing and training set
+# Function to normalize data and avoid calculus overflow
 
-def united_shuffle(x, y):
-    p = np.random.permutation(len(x))
-    return x[p], y[p]
+def mean_normalization(x):
+	mean = np.mean(x, axis=0)
+	std = np.std(x, axis=0)
+	x = (x - mean) / std
+	return x
 
-def data_spliter(x, y, proportion):
-    if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[0] == 0 or x.shape[1] == 0:
-        return None
-    if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape != (x.shape[0], 1):
-        return None
-    if not isinstance(proportion, float) or proportion > 1 or proportion < 0:
-        return None
-    try:
-        ind_split = (int)(x.shape[0] * proportion)
-        x, y = united_shuffle(x, y)
-        return (x[:ind_split, :], x[ind_split:, :], y[:ind_split, :], y[ind_split:, :])
-    except:
-        return None
-
-# Function to get crossed form
+# Function to get crossed and polynomial forms
 
 def get_crossed_form(x_training, x_testing):
     try:
@@ -68,21 +56,6 @@ def get_crossed_form(x_training, x_testing):
         return crossed_form, x_train, x_test
     except:
         print('Something went wrong with get_crossed_form function')
-        return None
-    
-# Function to obtains polynomial form
-
-def add_polynomial_features(x, power):
-    if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[1] != 1 or x.shape[0] == 0:
-        return None
-    if not isinstance(power, int) or power <= 0:
-        return None
-    try:
-        X = x
-        for i in range(1, power):
-            X = np.append(X, ((X[:,0] ** (i + 1)).reshape(-1, 1)), axis=1)
-        return X
-    except:
         return None
 
 def get_poly_forms(x_training, x_testing, max_power):
@@ -114,106 +87,100 @@ def get_poly_forms(x_training, x_testing, max_power):
 
 # Write model in file
 
-def add_model_to_file(name, global_mse, thetas, alpha):
+def add_model_to_file(name, loss, mse, thetas, alpha):
     try:
-        df = pd.DataFrame()
-        df = df.append({'Form' : name, 'Global MSE' : global_mse, \
-            'Thetas after fit' : thetas[:, 0].tolist(), 'Alpha' : alpha}, ignore_index=True)
-        df.to_csv('models.csv', mode='a', header=False)
+        df = pd.DataFrame({'Form' : name, 'Loss on testing set' : loss, \
+			'MSE on testing set': mse, 'Thetas after fit' : [thetas[:, 0].tolist()], 'Alpha' : alpha})
+        df.to_csv('models.csv', mode='a', header=False, index=False)
     except:
         print('Something went wrong with add_model_to_file function')
 
-# Check if model already tried or if tried but current dataset is better
-
-def check_if_dataset_is_better(form, global_mse):
-    try:
-        df = pd.read_csv('models.csv')
-        find_form = df.loc[df['Form'] == form]
-        if find_form.empty:
-            return True
-        if global_mse == float("inf") or find_form['Global MSE'].values[0] <= global_mse:
-            return False
-        idx = (find_form.index.tolist())[0]
-        df.drop(idx, inplace=True)
-        df.to_csv('models.csv', index=False)
-        return True
-    except:
-        print('Something went wrong with check_if_dataset_is_better function')
-        return None
-
 # Training models
 
-def get_alpha(poly_name):
+def train_all_models(max_iter, x_training_forms, x_testing_forms, poly_names, y_train, y_test):
     try:
-        if (poly_name.find('x2p4') != -1):
-            alpha = 3e-28
-        elif (poly_name.find('x2p3') != -1 or poly_name.find('x2p2') != -1 or poly_name.find('x1p3') != -1 or poly_name.find('x1p4') != -1):
-            alpha = 3e-21
-        elif (poly_name.find('x3p4') != -1 or poly_name.find('x1*x2') != -1):
-            alpha = 3e-20
-        elif (poly_name.find('x1p2') != -1 or poly_name.find('*') != -1):
-            alpha = 3e-8
-        else:
-            alpha = 3e-7
-        return alpha
-    except:
-        print('Something went wrong in get_alpha function')
-        return None
-
-def recuperate_thetas(form, len_thetas):
-    try:
-        df = pd.read_csv('models.csv')
-        find_form = df.loc[df['Form'] == form]
-        if find_form.empty:
-            return [1] * len_thetas
-        thetas = (find_form['Thetas after fit'].values)[0].strip('[]').replace('\' ', '').split(',')
-        thetas = [float(i) for i in thetas]
-        return thetas
-    except:
-        print('Something went wrong with recuperate_thetas function')
-        return None
-
-def train_all_models(base_datas, x_training_forms, x_testing_forms, poly_names):
-    try:
-        y_training = base_datas[2]
-        y_testing = base_datas[3]
         for i in range(0, len(x_training_forms)):
+
             # Thetas is initialized to a list of 1
-            thetas = recuperate_thetas(poly_names[i], x_training_forms[i].shape[1] + 1)
-            # We try to obtain alpha adapted to each form
-            alpha = get_alpha(poly_names[i])
-            max_iter = 100
+            thetas = [1] * (x_training_forms[i].shape[1] + 1)
+            alpha = 0.005
+
             # We train the model
-            print("\033[33mTraining form {} for alpha {} and max_iter {}\033[0m".format(poly_names[i], alpha, max_iter))
+            print("\033[33mTraining model of form {}\033[0m".format(poly_names[i]))
             form_lr = MyLR(np.array(thetas).reshape(-1, 1), alpha=alpha, max_iter=max_iter)
-            form_lr.fit_(x_training_forms[i], y_training)
-            # We seek the global MSE
-            x_global = np.concatenate([x_training_forms[i], x_testing_forms[i]])
-            y_global = np.concatenate([y_training, y_testing])
-            y_hat_global = form_lr.predict_(x_global)
-            global_mse = form_lr.mse_(y_global, y_hat_global)
-            print(global_mse)
-            if np.isnan(global_mse) or global_mse == float("inf"):
+            form_lr.fit_(x_training_forms[i], y_train)
+
+            # We calculate loss and MSE on testing set
+            y_hat = form_lr.predict_(x_testing_forms[i])
+
+            loss = form_lr.loss_(y_test, y_hat)
+            if np.isnan(loss) or loss == float("inf"):
                 print('\033[91mError in calculation (try to reduce alpha)\033[0m')
                 continue
+            print('Loss on testing set: {:.2f}'.format(loss))
+
+            mse = form_lr.mse_(y_test, y_hat)
+            if np.isnan(mse) or mse == float("inf"):
+                print('\033[91mError in calculation (try to reduce alpha)\033[0m')
+                continue
+            print('MSE on testing set:  {:.2f}'.format(mse))
+
             # We add the model to file
-            if check_if_dataset_is_better(poly_names[i], global_mse) is True:
-                add_model_to_file(poly_names[i], global_mse, form_lr.theta, alpha)
-            print('\033[92mOK\033[0m')
+            add_model_to_file(poly_names[i], loss, mse, form_lr.theta, alpha)
+            print('\033[92mOK\033[0m\n')
     except:
         print("Something went wrong with train_all_models function")
 
+# Find best model according to MSE
+
+def find_best_model(filename):
+    assert os.path.isfile(filename)
+    df = pd.read_csv(filename)
+    min_col = df.min()
+    best = df.loc[df['MSE on testing set'] == min_col['MSE on testing set']]
+    print('\033[92mBest model (according to MSE):\033[0m Form \033[34m{}\033[0m of loss \033[34m{:.2f}\033[0m and mse \033[34m{:.2f}\033[0m'.format(best['Form'].values[0], best['Loss on testing set'].values[0], best['MSE on testing set'].values[0]))
+    return best
+
+# Save datas sets to use the same in space_avocado.py
+
+def save_sets(x, y, x_train, y_train, x_test, y_test):
+	if (os.path.isfile('sets.npz')):
+			os.remove('sets.npz')
+	try:
+		np.savez('sets.npz', x=x, y=y, x_train=x_train, y_train=y_train, x_test=x_test, y_test=y_test)
+	except:
+		print('Something went wrong with save_sets function')
+		return None
+
+# Benchmark function
+
+def launch_benchmark(max_iter):
+    filename = './space_avocado.csv'
+
+    # Create model file and extract data as array
+    create_model_file()
+    X, y = extract_datas(filename)
+
+    # Value can be too big and screw up calculations : Let's scale it
+    x = mean_normalization(X)
+
+    # Split dataset into training and tests sets
+    x_train, x_test, y_train, y_test = data_spliter(x, y, 0.8)
+
+    # Generate polynomial forms with maximum degree of 4
+    poly_names, x_poly_train, x_poly_test = get_poly_forms(x_train, x_test, 4)
+    crossed_names, x_cross_train, x_cross_test = get_crossed_form(x_train, x_test)
+    poly_names.extend(crossed_names)
+    x_poly_train.extend(x_cross_train)
+    x_poly_test.extend(x_cross_test)
+    train_all_models(max_iter, x_poly_train, x_poly_test, poly_names, y_train, y_test)
+
+    # Display best model found
+    best = find_best_model('./models.csv')
+
+    # Save sets for space_avocado.py
+    save_sets(X, y, x_train, y_train, x_test, y_test)
+    return best, X, y, x_train, y_train, x_test, y_test
 
 if __name__ == '__main__':
-    try:
-        x, y = extract_datas('space_avocado.csv')
-        create_model_file()
-        splited_datas = data_spliter(x, y, 0.8)
-        poly_names, x_training_forms, x_testing_forms = get_poly_forms(splited_datas[0], splited_datas[1], 4)
-        crossed_form, x_cross_train, x_cross_test = get_crossed_form(splited_datas[0], splited_datas[1])
-        poly_names.extend(crossed_form)
-        x_training_forms.extend(x_cross_train)
-        x_testing_forms.extend(x_cross_test)
-        train_all_models(splited_datas, x_training_forms, x_testing_forms, poly_names)
-    except:
-        print('Something went wrong with benchmark_train program')
+	launch_benchmark(50000)

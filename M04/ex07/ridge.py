@@ -95,3 +95,14 @@ class MyRidge(MyLR):
 			return self.theta
 		except:
 			return None
+
+	def mse_(self, y, y_hat):
+		if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.size == 0 or y.shape[1] != 1:
+			return None
+		if not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.ndim != 2 or y_hat.shape != y.shape:
+			return None
+		try:
+			mse = ((y_hat - y) ** 2).mean(axis=None)
+			return float(mse)
+		except:
+			return None

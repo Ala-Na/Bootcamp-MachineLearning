@@ -1,3 +1,5 @@
+from benchmark_train import *
+from polynomial_model import add_polynomial_features
 import numpy as np
 import os
 import pandas as pd
@@ -5,45 +7,7 @@ import matplotlib.pyplot as plt
 from textwrap import wrap
 from mylinearregression import MyLinearRegression as MyLR
 
-def extract_datas(filename):
-    assert os.path.isfile(filename)
-    try:
-        datas = pd.read_csv(filename)
-        x = np.asarray(datas)
-        return x[:, 1:x.shape[1] - 1].reshape(-1, 3), x[:, x.shape[1] - 1:].reshape(-1, 1)
-    except:
-        print('Something went wrong with extract_datas function')
-        return None
-
-def find_best_model(filename):
-    assert os.path.isfile(filename)
-    try:
-        df = pd.read_csv(filename)
-        min_col = df.min()
-        best = df.loc[df['Global MSE'] == min_col['Global MSE']]
-        print('\033[92mBest model:\033[0m Form \033[34m{}\033[0m of MSE \033[34m{}\033[0m'.format(best['Form'].values[0], best['Global MSE'].values[0]))
-        print('Thetas \033[34m{}\033[0m'.format(best['Thetas after fit'].values[0]))
-        return best
-    except:
-        print('Something went wrong with find_best_model function')
-        return None
-
-def recuperate_thetas(best):
-    try:
-        thetas = (best['Thetas after fit'].values)[0].strip('[]').replace('\' ', '').split(',')
-        thetas = [float(i) for i in thetas]
-        return thetas
-    except:
-        print('Something went wrong with recuperate_thetas function')
-        return None
-
-def recuperate_lr(best, thetas):
-    try:
-        alpha = ((best['Alpha']).values)[0]
-        return MyLR(thetas, alpha=alpha, max_iter=100000)
-    except:
-        print('something went wrong with recuperate_lr function')
-        return None
+# Functions to recuperate parameters and infos of best model
 
 def recuperate_x_form(best):
     try:
@@ -84,19 +48,7 @@ def get_original_x_poly(original_x, x1, x2, x3):
         print('Something went wrong with get_original_x_poly function')
         return None    
 
-def add_polynomial_features(x, power):
-    if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[1] != 1 or x.shape[0] == 0:
-        return None
-    if not isinstance(power, int) or power <= 0:
-        return None
-    try:
-        X = x
-        for i in range(1, power):
-            X = np.append(X, ((X[:,0] ** (i + 1)).reshape(-1, 1)), axis=1)
-        return X
-    except:
-        return None
-
+# Function to obtain a line curve in 3D representation
 
 def get_continuous_x(x):
     try:
@@ -108,105 +60,102 @@ def get_continuous_x(x):
         print('Something went wrong with get_continuous_x function')
         return None
 
-def get_poly_continuous_x(x, x1, x2, x3):
-    try:
-        x1_cont = np.linspace(x[:, 0].min(), x[:, 0].max(), 10000)
-        x2_cont = np.linspace(x[:, 1].min(), x[:, 1].max(), 10000)
-        x3_cont = np.linspace(x[:, 2].min(), x[:, 2].max(), 10000)
-        if x1 != 1:
-            x1_cont = add_polynomial_features(x1_cont.reshape(-1, 1), x1)
-        if (x2 != 1):
-            x2_cont = add_polynomial_features(x2_cont.reshape(-1, 1), x2)
-        if (x3 != 1):
-            x3_cont = add_polynomial_features(x3_cont.reshape(-1, 1), x3)
-        return np.c_[x1_cont, x2_cont, x3_cont]
-    except:
-        print('Something went wrong with get_poly_continuous_x function')
-        return None
+# Function to display plot for best model
 
-def get_cross_continuous_x(x, form):
-    try:
-        if form == 'x1*x2 x3':
-            return np.c_[np.multiply(x[:, 0], x[:, 1]), x[:, 2]]
-        elif form == 'x1*x3 x2':
-            return np.c_[np.multiply(x[:, 0], x[:, 2]), x[:, 1]]
-        elif form == 'x1 x2*x3':
-            return np.c_[x[:, 0], np.multiply(x[:, 1], x[:, 2])]
-        return np.multiply(np.multiply(x[:, 0], x[:, 1]), x[:, 2]).reshape(-1, 1)
-    except:
-        print('Something went wrong with get_cross_continuous_x function')
-        return None
+def print_best_representation(model, best, x, y):
+    features = ['Weight', 'Production distance', 'Time delivery']
 
-# Save training to models file
+    ## Scatter plot
+    # 1 - Get x under correct format for prediction
+    x_for_predict = mean_normalization(x)
+    if (best['Form'].values[0].find('*') != -1):
+        form = best['Form'].values[0]
+        x_for_predict = get_original_x_crossed(x_for_predict, form)
+    else :
+        form = best['Form'].values[0]
+        x1, x2, x3 = recuperate_x_form(best)
+        x_for_predict = get_original_x_poly(x_for_predict, x1, x2, x3)
 
-def add_model_to_file(name, global_mse, thetas, alpha):
-    try:
-        df = pd.DataFrame()
-        df = df.append({'Form' : name,'Global MSE' : global_mse, \
-            'Thetas after fit' : thetas[:, 0].tolist(), 'Alpha' : alpha}, ignore_index=True)
-        df.to_csv('models.csv', mode='a', header=False)
-    except:
-        print('Something went wrong with add_model_to_file function') 
+    # 2 - Calculate y_hat
+    y_hat = model.predict_(x_for_predict)
 
-def save_training(form, mse, thetas, alpha):
+    # 3 - Scatter plot
+    fig = plt.figure(figsize=(10*3, 10))
+    for i in range(3):
+        ax = fig.add_subplot(1, 3, i+1)
+        ax.scatter(x[:,i], y, color='blue', label='True price', alpha=0.7)
+        ax.scatter(x[:,i], y_hat, color='red', label='Predicted price', alpha=0.1)
+        ax.set_xlabel(features[i])
+        ax.set_ylabel('Price')
+        if i == 1:
+            ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=6)
+    plt.show()
+
+    # 3D plots
+    # 1 - Create a continuous x for obtaining a continuous line
+    x_cont = get_continuous_x(x)
+
+    # 2 - Get x under correct format for prediction
+    x_cont_form = mean_normalization(x_cont)
+    if (best['Form'].values[0].find('*') != -1):
+        form = best['Form'].values[0]
+        x_cont_form = get_original_x_crossed(x_cont_form, form)
+    else :
+        form = best['Form'].values[0]
+        x1, x2, x3 = recuperate_x_form(best)
+        x_cont_form = get_original_x_poly(x_cont_form, x1, x2, x3)
+
+    # 3 - Calculate y_hat
+    y_hat = model.predict_(x_cont_form)
+
+    # 4 - 3D plot
+    fig = plt.figure(figsize=(10*3, 10))
+    for i in range(3):
+        ax = fig.add_subplot(1, 3, i+1, projection='3d')
+        j = i + 1 if i < 2 else 0
+        ax.scatter3D(x[:,i].flatten(), x[:, j].flatten(), y.flatten(), color='seagreen', label='True price')
+        ax.plot3D(x_cont[:,i].flatten(), x_cont[:, j].flatten(), y_hat.flatten(), color='lime', label='Predicted price')
+        ax.set_xlabel(features[i])
+        ax.set_ylabel(features[j])
+        ax.set_zlabel('Price')
+        if i == 1:
+            ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=6)
+    plt.show()
+
+# Function to train best model
+
+def train_best_model(best, form, x_train, y_train, x_test, y_test):
+
+    # Recuperate form (crossed or polynomial) on x_train and x_test for training
+    if (best['Form'].values[0].find('*') != -1):
+        form = best['Form'].values[0]
+        x_train = get_original_x_crossed(x_train, form)
+        x_test = get_original_x_crossed(x_test, form)
+    else :
+        form = best['Form'].values[0]
+        x1, x2, x3 = recuperate_x_form(best)
+        x_train = get_original_x_poly(x_train, x1, x2, x3)
+        x_test = get_original_x_poly(x_test, x1, x2, x3)
+
+    # Recuperate thetas       
+    thetas = (best['Thetas after fit'].values)[0].strip('[]').replace('\' ', '').split(',')
+    thetas = [float(i) for i in thetas]
+
+    print('Training best model...\n')
+
+    model = MyLR(thetas, alpha=best['Alpha'].values[0], max_iter=50000)
+    model.fit_(x_train, y_train)
+    y_hat = model.predict_(x_test)
+    print('Loss on testing set: {:.2f}'.format(model.loss_(y_test, y_hat)))
+    print('MSE on testing set: {:.2f}'.format(model.mse_(y_test, y_hat)))
+
+    return model
+
+# Functions to draw evaluations curves
+
+def trace_evaluation_curve_mse():
     try:
         df = pd.read_csv('models.csv')
-        find_form = df.loc[df['Form'] == form]
-        if find_form.empty:
-            add_model_to_file(form, mse, thetas, alpha)
-            return
-        if mse == float("inf") or find_form['Global MSE'].values[0] <= mse:
-            return
-        idx = (find_form.index.tolist())[0]
-        df.drop(idx, inplace=True)
-        df.to_csv('models.csv', index=False)
-        add_model_to_file(form, mse, thetas, alpha)
-    except:
-        print("Something went wrong with save_training function")
-
-def print_best_representation(best, x, y):
-    try:
-        thetas = recuperate_thetas(best)
-        best_lr = recuperate_lr(best, thetas)
-        if (best['Form'].values[0].find('*') != -1):
-            form = best['Form'].values[0]
-            original_x_set = get_original_x_crossed(x, form)
-        else :
-            form = best['Form'].values[0]
-            x1, x2, x3 = recuperate_x_form(best)
-            original_x_set = get_original_x_poly(x, x1, x2, x3)
-
-        print('\nTraining best model... (can take some time)\n')
-        best_lr.fit_(original_x_set, y)
-        y_hat_fit = best_lr.predict_(original_x_set)
-        mse_fit = best_lr.mse_(y_hat_fit, y)
-        print('\033[92mAfter training\033[0m MSE \033[34m{}\033[0m'.format(mse_fit))
-        print('Thetas \033[34m{}\033[0m'.format(best_lr.theta))
-        save_training(form, mse_fit, best_lr.theta, best_lr.alpha)
-
-        x_cont = get_continuous_x(x)
-        if (best['Form'].values[0].find('*') != -1):
-            x_cont_poly = get_cross_continuous_x(x_cont, form)
-        else :
-            x_cont_poly = get_poly_continuous_x(x_cont, x1, x2, x3)
-
-        y_hat = best_lr.predict_(x_cont_poly)
-        fig = plt.figure()
-        ax = plt.axes(projection='3d')
-        ax.scatter3D(x[:,0].flatten(), x[:, 2].flatten(), y.flatten(), color='seagreen', label='True price')
-        #ax.scatter3D(x_cont[:,0].flatten(), x_cont[:, 2].flatten(), y_hat.flatten(), color='lime', label='Predicted price')
-        ax.plot3D(x_cont[:,0].flatten(), x_cont[:, 2].flatten(), y_hat.flatten(), color='lime', label='Predicted price')
-        ax.set_xlabel('Weight')
-        ax.set_ylabel('Production distance')
-        ax.set_zlabel('Price')
-        ax.legend()
-        plt.show()
-    except:
-        print('Something went wrong with print_best_representation function')
-
-def trace_evaluation_curve(filename):
-    try:
-        df = pd.read_csv(filename)
         df = df.replace(to_replace='x\dp1', value='x', regex=True)
         df = df.replace(to_replace='x\dp2', value='x2', regex=True)
         df = df.replace(to_replace='x\dp3', value='x3', regex=True)
@@ -214,7 +163,25 @@ def trace_evaluation_curve(filename):
         plt.rc('xtick', labelsize=6)
         plt.figure(figsize=(10, 7))
         plt.title('Evaluation curve of MSE for differents tested models')
-        plt.plot(['\n'.join(wrap(x, 2)) for x in df['Form']], df['Global MSE'])
+        plt.plot(['\n'.join(wrap(x, 2)) for x in df['Form']], df['MSE on testing set'])
+        plt.xlabel('Model form (powers of: $x_{1} x_{2} x_{3}}$)')
+        plt.ylabel('MSE')
+        plt.grid()
+        plt.show()
+    except:
+        print('Something went wrong with trace_evaluation_curve function')
+
+def trace_evaluation_curve_loss():
+    try:
+        df = pd.read_csv('models.csv')
+        df = df.replace(to_replace='x\dp1', value='x', regex=True)
+        df = df.replace(to_replace='x\dp2', value='x2', regex=True)
+        df = df.replace(to_replace='x\dp3', value='x3', regex=True)
+        df = df.replace(to_replace='x\dp4', value='x4', regex=True)
+        plt.rc('xtick', labelsize=6)
+        plt.figure(figsize=(10, 7))
+        plt.title('Evaluation curve of loss for differents tested models')
+        plt.plot(['\n'.join(wrap(x, 2)) for x in df['Form']], df['Loss on testing set'])
         plt.xlabel('Model form (powers of: $x_{1} x_{2} x_{3}}$)')
         plt.ylabel('MSE')
         plt.grid()
@@ -223,11 +190,19 @@ def trace_evaluation_curve(filename):
         print('Something went wrong with trace_evaluation_curve function')
 
 if __name__ == "__main__":
-    try:
-        x, y = extract_datas('space_avocado.csv')
-        trace_evaluation_curve('models.csv')
-        best = find_best_model('models.csv')
-        print_best_representation(best,x, y)
-    except:
-        print('Something went wrong with space_avocado program. Please check that \
-            a models.csv file is present or launch banchmark_train.py')
+    # Recuperate best model and testing set
+    if os.path.isfile('./models.csv') and os.path.isfile('./sets.npz'):
+        print('Models were already trained !')
+        best = find_best_model('./models.csv')
+        sets = np.load('./sets.npz')
+        x, y, x_train, y_train, x_test, y_test = sets['x'], sets['y'], sets['x_train'], sets['y_train'], sets['x_test'], sets['y_test']
+    else:
+        best, x, y, x_train, y_train, x_test, y_test = launch_benchmark(50000)
+
+    # Draw evaluation curve
+    trace_evaluation_curve_loss()
+    trace_evaluation_curve_mse()
+
+    # Train and print best model
+    model = train_best_model(best, best['Form'].values[0], x_train, y_train, x_test, y_test)
+    print_best_representation(model, best, x, y)
