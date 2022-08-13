@@ -74,29 +74,28 @@ def generate_polynomial_forms(max_degree, x, x_valid):
 	return forms, x_poly, x_val_poly
 
 # Function to train model in one vs all
-def one_vs_all(x, y, x_val, thetas, max_iter, alpha, lambda_):
+def one_vs_all(x, x_train, y_train, x_val, thetas, max_iter, alpha, lambda_):
 	validation_y_hat = []
 	global_y_hat = []
-	global_x = np.vstack((x, x_val))
 	for zipcode in range (0, 4):
-		y_tmp = replace_zipcode(y, zipcode)
+		y_tmp = replace_zipcode(y_train, zipcode)
 		submodel = MyLoR(thetas, alpha=alpha, lambda_=lambda_, max_iter=max_iter)
-		submodel.fit_(x, y_tmp)
+		submodel.fit_(x_train, y_tmp)
 		validation_y_hat.append(submodel.predict_(x_val))
-		global_y_hat.append(submodel.predict_(global_x))
+		global_y_hat.append(submodel.predict_(x))
 	model_y_hat = np.argmax(validation_y_hat, axis=0).reshape(-1, 1)
 	model_global_y_hat = np.argmax(global_y_hat, axis=0).reshape(-1, 1)
 	return model_y_hat, model_global_y_hat
 
 # Function to train models
 
-def train_model(max_iter, form, x, y, x_val, y_val, lambda_, alpha, on_test):
+def train_model(max_iter, form, x, x_train, y_train, x_val, y_val, lambda_, alpha, on_test):
 	print('\033[33mTraining model of form {} with λ={}...\033[0m'.format(form, lambda_))
-	thetas = [1] * (x.shape[1] + 1)
+	thetas = [1] * (x_train.shape[1] + 1)
 	# Train model in one vs all logic
-	y_hat, global_y_hat = one_vs_all(x, y, x_val, thetas, max_iter, alpha, lambda_)
+	y_hat_val, y_hat_global = one_vs_all(x, x_train, y_train, x_val, thetas, max_iter, alpha, lambda_)
 	# Evaluate model on validation set
-	f1_score = f1_score_(y_val, y_hat)
+	f1_score = f1_score_(y_val, y_hat_val)
 	if not on_test:
 		print('F1 score on validation set: {:.2f}\n'.format(f1_score))
 	else:
@@ -104,15 +103,22 @@ def train_model(max_iter, form, x, y, x_val, y_val, lambda_, alpha, on_test):
 	# Save model
 	if not on_test:
 		add_model_to_file(form, f1_score, alpha, lambda_)
-	return f1_score, y_hat, global_y_hat
+	return f1_score, y_hat_val, y_hat_global
 
 # Function to find best model (f1 score closest to 1)
 
 def find_best_model_form(filename):
 	assert os.path.isfile(filename)
 	df = pd.read_csv(filename)
+	max_col = df.max()
+	best_f1 = df.loc[df['F1 score'] == max_col['F1 score']]
 	mean_f1_score = df.groupby('Form')['F1 score'].mean()
-	best_form = mean_f1_score.idxmax()
+	best_form_f1_mean = mean_f1_score.idxmax()
+	best_form = best_form_f1_mean
+	if (best_f1.Form.values[0] != best_form_f1_mean):
+		f1_score_for_best_mean = df.loc[df['Form'] == best_form_f1_mean]['F1 score'].values
+		if any(to_compare == best_f1.Form.values[0] for to_compare in f1_score_for_best_mean):
+			best_form = best_form_f1_mean
 	print('\033[92mBest model (according to F1 score):\033[0m Form \033[34m{}\033[0m'.format(best_form))
 	return best_form
 
@@ -140,11 +146,11 @@ def launch_benchmark(max_iter, alpha, on_test=False):
 	lambdas = np.round(np.linspace(0, 1, 6), 2)
 	for form in range(len(forms)):
 		for lambda_ in lambdas:
-			train_model(max_iter, forms[form], x_poly[form], y_train, x_val_poly[form], y_valid, lambda_, alpha, on_test)
+			train_model(max_iter, forms[form], add_polynomial_features(x, form + 1), x_poly[form], y_train, x_val_poly[form], y_valid, lambda_, alpha, on_test)
 	
 	# Display best model found
 	best_form = find_best_model_form('./models.csv')
 	return best_form
 
 if __name__ == '__main__':
-	launch_benchmark(60000, 0.005)
+	launch_benchmark(15000, 0.005)
