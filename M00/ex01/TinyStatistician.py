@@ -54,9 +54,9 @@ class TinyStatistician():
             return None
         x.sort()
         if (x.shape[0] * p / 100) % 2 == 0:
-            per_ind = int((x.shape[0] - 1) * p / 100)
+            per_ind = int((x.shape[0] - 1) * (p - 1) / 100)
         else:
-            per_ind = int(x.shape[0] * p / 100)
+            per_ind = int(x.shape[0] * (p - 1) / 100)
         return float(x[per_ind])
 
 
