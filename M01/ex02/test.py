@@ -1,4 +1,4 @@
-import numpy as np        
+import numpy as np
 from fit import *
 
 x = np.array([[12.4956442], [21.5007972], [31.5527382], [48.9145838], [57.5088733]])
@@ -12,3 +12,23 @@ print(theta1)
 print("\n")
 print(predict(x, theta1))
 #array([[15.3408728 ],[25.38243697],[36.59126492],[55.95130097],[65.53471499]])
+
+print("\n")
+# Error check theta not good shape
+theta2 = np.array([[1]])
+print(fit_(x, y, theta2, alpha=5e-6, max_iter=15000))
+#None
+
+print("\n")
+# Error check x is empty
+x=np.array([[]])
+print(fit_(x, y, theta2, alpha=5e-6, max_iter=15000))
+#None
+
+print("\n")
+# Error check y not good shape
+x = np.array([[12.4956442],[ 21.5007972],[ 31.5527382],[ 48.9145838],[ 57.5088733]])
+y = np.array([[37.4013816],[ 36.1473236],[ 45.7655287],[ 46.6793434]])
+theta2 = np.array([[1],[ -0.4]])
+print(fit_(x, y, theta2, alpha=5e-6, max_iter=15000))
+#None

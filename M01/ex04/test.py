@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error
-from mylinearregression import MyLinearRegression as MyLR
+from my_linear_regression import MyLinearRegression as MyLR
 from linear_model import *
 
 if __name__ == '__main__':

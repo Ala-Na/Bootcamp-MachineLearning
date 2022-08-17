@@ -23,3 +23,4 @@ print(minmax(Y), '\n')
 #0.6969697 , 0. ])
 
 print(minmax(np.array([])))
+#None (error check empty array)

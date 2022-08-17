@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from mylinearregression import MyLinearRegression as MyLR
+from my_linear_regression import MyLinearRegression as MyLR
 
 def extract_vectors(filename):
     assert os.path.isfile(filename)

@@ -27,7 +27,7 @@ class   MyLinearRegression():
     def gradient_(self, x, y):
         if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[1] != 1 or x.shape[0] == 0:
             return None
-        if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[1] != 1 or y.shape[0] == 0:
+        if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[1] != 1 or y.shape[0] != x.shape[0]:
             return None
         try:
             X = np.insert(x, 0, 1.0, axis = 1)
@@ -40,7 +40,7 @@ class   MyLinearRegression():
     def fit_(self, x, y):
         if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[1] != 1 or x.shape[0] == 0:
             return None
-        if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[1] != 1 or y.shape[0] == 0:
+        if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[1] != 1 or y.shape[0] != x.shape[0]:
             return None
         try:
             for i in range(0, self.max_iter):
@@ -57,9 +57,9 @@ class   MyLinearRegression():
     def loss_elem_(self, y, y_hat):
         if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[1] != 1 or y.shape[0] == 0:
             return None
-        if not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.ndim != 2 or y_hat.shape[1] != 1 or y_hat.shape[0] == 0:
+        if not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.ndim != 2 or y_hat.shape[1] != 1 or y_hat.shape[0] != y.shape[0]:
             return None
-        try:        
+        try:
             J_elem = []
             for yi, yi_hat in zip(y, y_hat):
                 J_elem.append([(yi_hat[0] - yi[0]) ** 2])
@@ -70,8 +70,8 @@ class   MyLinearRegression():
     def loss_(self, y, y_hat):
         if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[1] != 1 or y.shape[0] == 0:
             return None
-        if not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.ndim != 2 or y_hat.shape[1] != 1 or y_hat.shape[0] == 0:
-            return None  
+        if not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.ndim != 2 or y_hat.shape[1] != 1 or y_hat.shape[0] != y.shape[0]:
+            return None
         try:
             J_elem = self.loss_elem_(y, y_hat)
             J_value = float(1/(2*y.shape[0]) * np.sum(J_elem))
