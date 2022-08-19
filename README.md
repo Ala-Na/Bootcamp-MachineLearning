@@ -54,6 +54,7 @@ A one week bootcamp to learn machine learning using [Stanford massive open onlin
 - Numpy
 - matplotlib
 - pandas
+- sklearn
 
 
 # Credits
