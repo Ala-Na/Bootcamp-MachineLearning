@@ -31,3 +31,21 @@ y = np.array([[37.4013816],[ 36.1473236],[ 45.7655287],[ 46.6793434]])
 theta2 = np.array([[1],[ -0.4]])
 print(simple_gradient(x, y, theta2))
 #None
+
+x = np.array(range(1,11)).reshape((-1, 1))
+y = 1.25*x
+
+theta = np.array([[1.],[1.]])
+print(f"Student:\n{simple_gradient(x, y, theta)}")
+print(f"Truth  :\n{np.array([[-0.375],[-4.125]])}")
+print()
+
+theta = np.array([[1.],[-0.4]])
+print(f"Student:\n{simple_gradient(x, y, theta)}")
+print(f"Truth  :\n{np.array([[-8.075],[-58.025]])}")
+print()
+
+theta = np.array([[0.],[1.25]])
+print(f"Student:\n{simple_gradient(x, y, theta)}")
+print(f"Truth  :\n{np.array([[0.],[0.]])}")
+print()

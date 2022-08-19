@@ -18,3 +18,27 @@ print(gradient(x, y, theta1), '\n')
 theta2 = np.array([0, 0,0,0]).reshape((-1, 1))
 print(gradient(x, y, theta2), '\n')
 # Output: array([[ -0.71428571],[ 0.85714286],[ 23.28571429],[ -26.42857143]])
+
+print("Correction follow up")
+x = np.ones(10).reshape(-1,1)
+theta = np.array([[1], [1]])
+y = np.ones(10).reshape(-1,1)
+print(f"{gradient(x, y, theta) = }")
+print("array([[1], [1]])")
+
+x = (np.arange(1,25)).reshape(-1,2)
+theta = np.array([[3],[2],[1]])
+y = np.arange(1,13).reshape(-1,1)
+# print(f"{x.shape = }")
+# print(f"{y.shape = }")
+# print(f"{theta.shape = }")
+print(f"{gradient(x, y, theta) = }")
+print("""array([[ 33.5       ],
+	[521.16666667],
+	[554.66666667]])""")
+
+x = (np.arange(1,13)).reshape(-1,3)
+theta = np.array([[5],[4],[-2],[1]])
+y = np.arange(9,13).reshape(-1,1)
+print(f"{gradient(x, y, theta) = }")
+print("array([[ 11. ], [ 90.5], [101.5], [112.5]])")

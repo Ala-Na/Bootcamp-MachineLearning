@@ -32,3 +32,9 @@ y = np.array([[37.4013816],[ 36.1473236],[ 45.7655287],[ 46.6793434]])
 theta2 = np.array([[1],[ -0.4]])
 print(fit_(x, y, theta2, alpha=5e-6, max_iter=15000))
 #None
+
+x = np.array(range(1,101)).reshape(-1,1)
+y = 0.75*x + 5
+theta = np.array([[1.],[1.]])
+print(fit_(x, y, theta, 5e-4, 20000))
+print("[[4.03112103], [0.76446193]]")

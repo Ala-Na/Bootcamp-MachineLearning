@@ -16,7 +16,7 @@ class   MyLinearRegression():
                 raise ValueError("Thetas not valid")
         self.alpha = alpha
         self.max_iter= max_iter
-        
+
     def predict_(self, x):
         if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[0] == 0 or (x.shape[1] + 1) != self.theta.shape[0]:
             return None
@@ -57,7 +57,7 @@ class   MyLinearRegression():
         if not isinstance(y, np.ndarray) or not np.issubdtype(y.dtype, np.number) or y.ndim != 2 or y.shape[0] == 0:
             return None
         elif not isinstance(y_hat, np.ndarray) or not np.issubdtype(y_hat.dtype, np.number) or y_hat.ndim != 2 or y_hat.shape != y.shape:
-            return None        
+            return None
         try:
             return (y_hat - y) ** 2
         except:

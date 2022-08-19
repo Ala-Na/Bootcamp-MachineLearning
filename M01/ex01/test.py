@@ -33,3 +33,31 @@ y = np.array([[37.4013816],[ 36.1473236],[ 45.7655287],[ 46.6793434]])
 theta2 = np.array([[1],[ -0.4]])
 print(gradient(x, y, theta2))
 #None
+
+def unit_test(n, theta, answer, f):
+		x = np.array(range(1,n+1)).reshape((-1, 1))
+		y = f(x)
+		print(f"Student:\n{gradient(x, y, theta)}")
+		print(f"Truth  :\n{answer}")
+		print()
+
+
+theta = np.array([[1.],[1.]])
+answer = np.array([[-11.625], [-795.375]])
+unit_test(100, theta, answer, lambda x:1.25 * x)
+
+answer = np.array([[-124.125], [-82957.875]])
+unit_test(1000, theta, answer, lambda x:1.25 * x)
+
+answer = np.array([[-1.24912500e+03], [-8.32958288e+06]])
+unit_test(10000, theta, answer, lambda x:1.25 * x)
+
+theta = np.array([[4], [-1]])
+answer = np.array([[-13.625], [-896.375]])
+unit_test(100, theta, answer, lambda x:-0.75 * x + 5)
+
+answer = np.array([[-126.125], [-83958.875]])
+unit_test(1000, theta, answer, lambda x:-0.75 * x + 5)
+
+answer = np.array([[-1.25112500e+03], [-8.33958388e+06]])
+unit_test(10000, theta, answer, lambda x:-0.75 * x + 5)
