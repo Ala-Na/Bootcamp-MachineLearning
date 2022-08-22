@@ -29,6 +29,7 @@ print(predict_(x, theta4), '\n')
 # Output:
 #array([[12.5], [32. ], [51.5], [71. ]])
 
+print("ERROR CHECK:")
 y = [[]]
 print(predict_(y, theta1))
 
@@ -39,7 +40,7 @@ print(predict_(x, theta5))
 theta6 = np.array([-3, 1, 2]).reshape((-1, 1))
 print(predict_(x, theta6))
 
-print("CORRECTION:")
+print("\nCORRECTION:")
 print("Test 1")
 x = (np.arange(1,13)).reshape(-1,2)
 theta = np.ones(3).reshape(-1,1)

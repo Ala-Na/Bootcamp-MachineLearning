@@ -196,7 +196,7 @@ if __name__ == '__main__':
     print(f"MSE Score: {my_lreg.mse_(Y, my_lreg.predict_(X_1))}")
     # my_lreg.scatter(X_1, Y)
 
-    print("Ex 1.b")
+    print("\nEx 1.b")
     print("Sell_price vs Thrust_power")
     my_lreg = MyLR([1.0, 1.0], alpha=1e-4, max_iter=60000)
     my_lreg.fit_(X_2, Y)
@@ -206,7 +206,7 @@ if __name__ == '__main__':
     print(f"MSE Score: {my_lreg.mse_(Y, my_lreg.predict_(X_2))}")
     # my_lreg.scatter(X_2, Y)
 
-    print("Ex 1.c")
+    print("\nEx 1.c")
     print("Sell_price vs Terameters")
     my_lreg = MyLR([1.0, 1.0], alpha=1e-4, max_iter=500000)
     my_lreg.fit_(X_3, Y)
@@ -220,7 +220,7 @@ if __name__ == '__main__':
     # print("144044.877...")
     # print()
 
-    print("CORRECTION: A new hope:")
+    print("\nCORRECTION: A new hope:")
     my_lreg.fit_(X,Y)
     print(my_lreg.theta)
     # print("array([[334.994...],[-22.535...],[5.857...],[-2.586...]])")

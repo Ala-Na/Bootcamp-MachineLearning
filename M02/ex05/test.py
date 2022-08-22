@@ -9,16 +9,16 @@ mylr = MyLR([[1.], [1.], [1.], [1.], [1]])
 
 # Example 0:
 Y_hat = mylr.predict_(X)
-print(Y_hat, '\n')
-# Output:array([[8.], [48.], [323.]])
+print(Y_hat)
+print("Output:array([[8.], [48.], [323.]])\n")
 
 # Example 1:
-print(mylr.loss_elem_(Y, Y_hat), '\n')
-# Output:array([[225.], [0.], [11025.]])
+print(mylr.loss_elem_(Y, Y_hat))
+print("Output:array([[225.], [0.], [11025.]])\n")
 
 # Example 2:
-print(mylr.loss_(Y, Y_hat), '\n')
-# Output:1875.0
+print(mylr.loss_(Y, Y_hat))
+print("Output:1875.0\n")
 
 print('Can take time...\n')
 
@@ -26,21 +26,23 @@ print('Can take time...\n')
 mylr.alpha = 1.6e-4
 mylr.max_iter = 200000
 mylr.fit_(X, Y)
-print(mylr.thetas, '\n')
-# Output:array([[18.188..], [2.767..], [-0.374..], [1.392..], [0.017..]])
+print(mylr.thetas)
+print("Output:array([[18.188..], [2.767..], [-0.374..], [1.392..], [0.017..]])\n")
 
 # Example 4:
 Y_hat = mylr.predict_(X)
-print( Y_hat, '\n')
-# Output:array([[23.417..], [47.489..], [218.065...]])
+print( Y_hat)
+print("Output:array([[23.417..], [47.489..], [218.065...]])\n")
 
 # Example 5:
-print(mylr.loss_elem_(Y, Y_hat), '\n')
-# Output:array([[0.174..], [0.260..], [0.004..]])
+print(mylr.loss_elem_(Y, Y_hat))
+print("Output:array([[0.174..], [0.260..], [0.004..]])\n")
 
 # Example 6:
 print(mylr.loss_(Y, Y_hat))
-# Output: 0.0732
+print("Output: 0.0732\n")
+
+print("\nCorrection:")
 
 x = np.array([[12.4956442], [21.5007972], [31.5527382], [48.9145838], [57.5088733]])
 y = np.array([[37.4013816], [36.1473236], [45.7655287], [46.6793434], [59.5585554]])
@@ -82,7 +84,7 @@ print(195.34539903032385)
 # Example 1.0:
 print("# Example 1.0:")
 lr2 = MyLR(thetas=[1, 1], alpha=5e-8, max_iter=1500000)
-print(lr2.fit_(x, y))
+lr2.fit_(x, y)
 print(lr2.thetas)
 # Output:
 print("""

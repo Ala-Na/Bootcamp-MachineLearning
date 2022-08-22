@@ -9,6 +9,8 @@ y = np.array([2, 14, -13, 5, 12, 4, -19]).reshape((-1, 1))
 # the numpy array to fit thetas conditions of gradient function :
 # Theta must be (n + 1) * 1 for an x of m * n dimensions.
 
+# Github issue: https://github.com/42-AI/bootcamp_machine-learning/issues/225
+
 # In subject examples, thetas are only 3 * 1 for x of 7 * 3 dimensions...
 
 theta1 = np.array([0, 3,0.5,-6]).reshape((-1, 1))

@@ -32,7 +32,7 @@ print("\nCORRECTION:")
 x = np.ones(42).reshape((-1, 1))
 y = np.ones(42).reshape((-1, 1))
 ret = data_spliter(x, y, 0.42)
-print(list(map(np.shape, ret)))
+print("\n", list(map(np.shape, ret)))
 print("[(17,1), (25,1), (17,1), (25,1)]")
 
 
@@ -41,7 +41,7 @@ tmp= np.arange(0,110).reshape(11,10)
 x = tmp[:, :-1]
 y = tmp[:,-1].reshape((-1, 1))
 ret = data_spliter(x, y, 0.42)
-print(ret)
+print("\n", ret)
 print("""(array([[ 50,  51,  52,  53,  54,  55,  56,  57,  58],
 	[  0,   1,   2,   3,   4,   5,   6,   7,   8],
 	[ 90,  91,  92,  93,  94,  95,  96,  97,  98],
@@ -61,5 +61,5 @@ print("""(array([[ 50,  51,  52,  53,  54,  55,  56,  57,  58],
 	[79],
 	[39],
 	[69]]))""")
-print(list(map(np.shape, ret)))
+print("\n", list(map(np.shape, ret)))
 print("[(4, 9), (7, 9), (4,1), (7,1)]")

@@ -83,7 +83,7 @@ def get_poly_forms(x_training, x_testing, max_power):
         return poly_name, x_training_poly, x_testing_poly
     except:
         print('Something went wrong with get_poly_forms function')
-        return None    
+        return None
 
 # Write model in file
 
@@ -168,6 +168,18 @@ def launch_benchmark(max_iter):
     x_train, x_test, y_train, y_test = data_spliter(x, y, 0.8)
 
     # Generate polynomial forms with maximum degree of 4
+
+    # NOTE : I originally didn't quite understand how polynomial forms should be used.
+    # I could have only trained a general polynomial form of all x^form instead of
+    # each different combinaisons of x(i)^form.
+    # Why ? Because in the end, gradient descent will reduce the thetas values
+    # linked to unimportant features.
+    # I kept my original way of implementing polynomial forms as it can
+    # reveal for which feature the polynomial degree is important without
+    # showing associated thetas.
+    # Here, the use of crossed values was made after a suggestion of 42AI on their
+    # slack exchange forum, though it wasn't asked in the original exercise.
+
     poly_names, x_poly_train, x_poly_test = get_poly_forms(x_train, x_test, 4)
     crossed_names, x_cross_train, x_cross_test = get_crossed_form(x_train, x_test)
     poly_names.extend(crossed_names)
