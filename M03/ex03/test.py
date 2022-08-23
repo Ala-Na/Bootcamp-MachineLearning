@@ -23,3 +23,33 @@ y_hat3 = logistic_predict_(x3, theta3)
 print(vec_log_loss_(y3, y_hat3, eps=0.0))
 # Output: 2.9938533108607053
 
+print("CORRECTION:")
+y=np.array([[0], [0]])
+y_hat=np.array([[0], [0]])
+print(f"{vec_log_loss_(y, y_hat) = }")
+print("Ans = 0 /close to 0")
+print()
+
+y=np.array([[0], [1]])
+y_hat=np.array([[0], [1]])
+print(f"{vec_log_loss_(y, y_hat) = }")
+print("Ans = 0 / close to 0")
+print()
+
+y=np.array([[0], [0], [0]])
+y_hat=np.array([[1], [0], [0]])
+print(f"{vec_log_loss_(y, y_hat) = }")
+print("Ans = 11.51292546")
+print()
+
+y=np.array([[0], [0], [0]])
+y_hat=np.array([[1], [0], [1]])
+print(f"{vec_log_loss_(y, y_hat) = }")
+print("Ans = 23.02585093")
+print()
+
+y=np.array([[0], [1], [0]])
+y_hat=np.array([[1], [0], [1]])
+print(f"{vec_log_loss_(y, y_hat) = }")
+print("Ans = 34.53877639")
+print()

@@ -17,13 +17,15 @@ def get_multi_sub_graph(ax, x, y_hat, labels, axis_features, colors):
 	except:
 		print('Something went wrong in get_sub_graph function')
 
-def draw_multi_scatter_plots(x, y_hat):
-	planets = ['Venus', 'Earth', 'Mars', 'Belt']
+def draw_multi_scatter_plots(x, y, y_hat):
+	planets_p = ['Venus (pred)', 'Earth (pred)', 'Mars (pred)', 'Belt (pred)']
+	planets_t = ['Venus (true)', 'Earth (true)', 'Mars (true)', 'Belt (true)']
 	planets_colors = ['green', 'blue', 'red', 'yellow']
-	fig, ax = plt.subplots(1, 3)
+	fig, ax = plt.subplots(2, 3)
 	# Create pair of datas and draw plot accordingly
 	for i, pair in enumerate(itertools.combinations(['weight','height','bone_density'], 2)):
-		get_multi_sub_graph(ax[i], x, y_hat, planets, [pair[0], pair[1]], planets_colors)
+		get_multi_sub_graph(ax[0, i], x, y_hat, planets_p, [pair[0], pair[1]], planets_colors)
+		get_multi_sub_graph(ax[1, i], x, y, planets_t, [pair[0], pair[1]], planets_colors)
 	plt.show()
 
 def train_multi_model(x_original, y_original, x_train, x_test, y_train, y_test):
@@ -45,7 +47,7 @@ def train_multi_model(x_original, y_original, x_train, x_test, y_train, y_test):
 		print('\n')
 
 	print('\033[92mSecond step: Deduce planet classification for each citizen\033[0m\n')
-	
+
 	planets_predictions_train = np.argmax(planets_y_hat_train, axis=0).reshape(-1, 1)
 	planets_predictions_test = np.argmax(planets_y_hat_test, axis=0).reshape(-1, 1)
 	planets_predictions_global = np.argmax(planets_y_hat_global, axis=0).reshape(-1, 1)
@@ -75,4 +77,4 @@ if __name__ == '__main__':
 	y_hat = train_multi_model(x_original, y_original, x_train, x_test, y_train, y_test)
 
 	# Draw scatter plots
-	draw_multi_scatter_plots(x_datas, y_hat)
+	draw_multi_scatter_plots(x_datas, y_original, y_hat)

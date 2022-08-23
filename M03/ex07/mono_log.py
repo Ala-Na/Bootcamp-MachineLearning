@@ -32,7 +32,7 @@ def get_splitted_datas(zipcode=None):
 		y = np.select([y == zipcode, y != zipcode], [1, 0], y)
 	# Split data set in training and testing sets
 	x_train, x_test, y_train, y_test = data_spliter(x, y, 0.8)
-	return x_datas, x, y, x_train, x_test, y_train, y_test	
+	return x_datas, x, y, x_train, x_test, y_train, y_test
 
 
 def draw_sub_spots(ax, x, y, label, color, size):
@@ -55,15 +55,17 @@ def get_mono_sub_graph(ax, x, y_hat, labels, axis_features, colors):
 	except:
 		print('Something went wrong in get_sub_graph function')
 
-def draw_mono_scatter_plots(zipcode, x, y_hat):
+def draw_mono_scatter_plots(zipcode, x, y, y_hat):
 	# Create pair of datas
 	planets = ['Venus', 'Earth', 'Mars', 'Belt']
 	planets_colors = ['green', 'blue', 'red', 'yellow']
-	labels = [planets[zipcode], 'Other planets']
+	labels_t = [planets[zipcode] + ' (true)', 'Other planets']
+	labels_p = [planets[zipcode] + ' (pred)', 'Other planets']
 	colors = [planets_colors[zipcode], 'grey']
-	fig, ax = plt.subplots(1, 3)
+	fig, ax = plt.subplots(2, 3)
 	for i, pair in enumerate(itertools.combinations(['weight','height','bone_density'], 2)):
-		get_mono_sub_graph(ax[i], x, y_hat, labels, [pair[0], pair[1]], colors)
+		get_mono_sub_graph(ax[0, i], x, y_hat, labels_p, [pair[0], pair[1]], colors)
+		get_mono_sub_graph(ax[1, i], x, y, labels_t, [pair[0], pair[1]], colors)
 	plt.show()
 
 
@@ -94,7 +96,7 @@ def train_mono_model(zipcode, x_original, x_train, x_test, y_train, y_test):
 	y_hat_rounded = np.round(mono_lor.predict_(x_test))
 	correctness = (np.sum(y_hat_rounded == y_test) / y_test.size)
 	print("Test set: \033[34m{}%\033[0m".format(correctness * 100))
-	
+
 	y_hat_rounded = np.round(mono_lor.predict_(x_fullset))
 	correctness = (np.sum(y_hat_rounded == y_fullset) / y_fullset.size)
 	print("Global set: \033[34m{}%\033[0m".format(correctness * 100))
@@ -128,4 +130,4 @@ if __name__ == '__main__':
 	y_hat_train, y_hat_test, y_hat_global, y_hat_rounded = train_mono_model(args.zipcode[0], x_original, x_train, x_test, y_train, y_test)
 
 	# Draw model
-	draw_mono_scatter_plots(args.zipcode[0], x_datas, y_hat_rounded)
+	draw_mono_scatter_plots(args.zipcode[0], x_datas, y_original, y_hat_rounded)

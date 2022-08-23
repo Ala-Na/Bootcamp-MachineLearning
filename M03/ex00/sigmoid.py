@@ -12,7 +12,7 @@ def sigmoid_(x):
     This function should not raise any Exception.
     """
     if not isinstance(x, np.ndarray) or not np.issubdtype(x.dtype, np.number) or x.ndim != 2 or x.shape[0] == 0 or x.shape[1] != 1:
-        return None 
+        return None
     try:
         return 1/(1 + np.exp(-x))
     except:

@@ -20,9 +20,12 @@ def log_gradient(x, y, theta):
         return None
     if not isinstance(theta, np.ndarray) or not np.issubdtype(theta.dtype, np.number )or theta.ndim != 2 or theta.shape != (x.shape[1] + 1, 1):
         return None
-    try:
-        X = np.insert(x, 0, 1.0, axis=1)
-        y_hat = 1 / (1 + np.exp(-X @ theta))
-        return np.matmul(X.T, y_hat -y) / y.shape[0]
-    except:
-        return None
+    # try:
+    X = np.insert(x, 0, 1.0, axis=1)
+    grad = 0
+    y_hat = 1 / (1 + np.exp(-X @ theta))
+    for i in range(x.shape[0]):
+        grad += X[i] * (y_hat[i] - y[i])
+    return (grad / y.shape[0]).reshape(-1, 1)
+    # except:
+    #     return None
