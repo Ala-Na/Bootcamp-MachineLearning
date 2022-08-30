@@ -64,8 +64,9 @@ def train_model(max_iter, form, x, y, x_val, y_val, lambda_):
 	# Evaluate model on validation set
 	y_hat = ridge.predict_(x_val)
 	loss = ridge.loss_(y_val, y_hat)
-	print('Loss on validation set: {:.2f}\n'.format(loss))
+	print('Loss on validation set: {:.2f}'.format(loss))
 	mse = ridge.mse_(y_val, y_hat)
+	print('MSE on validation set: {:.2f}\n'.format(mse))
 
 	# Save model
 	add_model_to_file(form, loss, mse, ridge.theta, ridge.alpha, lambda_)
@@ -108,13 +109,13 @@ def launch_benchmark(max_iter):
 
 	# Generate polynomial forms with maximum degree of 4
 	forms, x_poly, x_val_poly = generate_polynomial_forms(4, x_train, x_valid)
-	
+
 	# Train differents models with differents lambdas
 	lambdas = np.round(np.linspace(0, 1, 6), 2)
 	for form in range(len(forms)):
 		for lambda_ in lambdas:
 			train_model(max_iter, forms[form], x_poly[form], y_train, x_val_poly[form], y_valid, lambda_)
-	
+
 	# Display best model found
 	best = find_best_model('./models.csv')
 

@@ -51,6 +51,7 @@ def train_best_model(best, form, x_train, y_train, x_test, y_test):
 		ridge = MyRidge(thetas, lambda_=lambda_, alpha=best['Alpha'].values[0], max_iter=50000)
 		ridge.fit_(x_train, y_train)
 		print('Loss on testing set for λ={}: {:.2f}'.format(lambda_, ridge.loss_(y_test, ridge.predict_(x_test))))
+		print('MSE on testing set for λ={}: {:.2f}'.format(lambda_, ridge.mse_(y_test, ridge.predict_(x_test))))
 		models.append(ridge)
 
 	return models

@@ -43,7 +43,7 @@ theta = np.array([[-2.4], [-1.5], [0.3], [-1.4], [0.7]])
 
 model4 = mylogr(theta, penalty='l2', lambda_=1.0)
 
-# Example 1.1:
+# Example 4:
 print(model4.gradient_(x, y))
 # Output:
 #array([[-0.55711039],

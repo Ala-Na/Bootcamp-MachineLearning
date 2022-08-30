@@ -21,3 +21,20 @@ print(iterative_l2(y))
 print(l2(y))
 # Output:
 #36.25
+
+print("\nCORRECTION:")
+
+theta = np.ones(10).reshape(-1, 1)
+print(f"{l2(theta) = }")
+print("Ans = 9.0")
+print()
+
+theta = np.arange(1, 10).reshape(-1, 1)
+print(f"{l2(theta) = }")
+print("Ans = 284.0")
+print()
+
+theta = np.array([50, 45, 40, 35, 30, 25, 20, 15, 10,  5,  0]).reshape(-1, 1)
+print(f"{l2(theta) = }")
+print("Ans = 7125.0")
+print()

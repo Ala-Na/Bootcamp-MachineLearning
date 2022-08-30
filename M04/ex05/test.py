@@ -60,3 +60,26 @@ print(vec_reg_logistic_grad(y, x, theta, 0.0))
 #[-2.01756886],
 #[-2.10071291],
 #[-3.27257351]])
+
+print("\nCORRECTION:")
+x = np.array([[0, 2], [3, 4],[2, 4], [5, 5],[1, 3], [2, 7]]).reshape(-1, 2)
+y = np.array([[0], [1], [1], [0], [1], [0]]).reshape(-1, 1)
+theta = np.array([[-24.0], [-15.0], [3.0]]).reshape(-1, 1)
+
+print(f"{vec_reg_logistic_grad(y, x, theta, 0.5) = }")
+print("""array([[-0.5       ],
+		[-2.25      ],
+		[-1.58333333]])""")
+print()
+
+print(f"{vec_reg_logistic_grad(y, x, theta, 0.05) = }")
+print("""array([[-0.5       ],
+		[-1.125     ],
+		[-1.80833333]])""")
+print()
+
+print(f"{vec_reg_logistic_grad(y, x, theta, 2.0) = }")
+print("""array([[-0.5       ],
+		[-6.        ],
+		[-0.83333333]])""")
+print()

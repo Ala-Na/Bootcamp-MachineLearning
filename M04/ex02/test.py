@@ -19,3 +19,30 @@ print(reg_loss_(y, y_hat, theta, .05))
 print(reg_loss_(y, y_hat, theta, .9))
 # Output:
 #1.116357142857143
+
+print("\nCORRECTION:")
+y=np.arange(10,100,10).reshape(-1, 1)
+y_hat=np.arange(9.5,95,9.5).reshape(-1, 1)
+theta=np.array([-10,3,8]).reshape(-1, 1)
+lambda_=0.5
+print(f"{reg_loss_(y, y_hat, theta, lambda_) = }")
+print("Ans = 5.986111111111111")
+print()
+
+lambda_ = 5.0
+print(f"{reg_loss_(y, y_hat, theta, lambda_) = }")
+print("Ans = 24.23611111111111")
+print()
+
+y = np.arange(-15,15,0.1).reshape(-1, 1)
+y_hat = np.arange(-30,30,0.2).reshape(-1, 1)
+theta=np.array([42,24,12]).reshape(-1, 1)
+lambda_=0.5
+print(f"{reg_loss_(y, y_hat, theta, lambda_) = }")
+print("Ans = 38.10083333333307")
+print()
+
+lambda_=8.0
+print(f"{reg_loss_(y, y_hat, theta, lambda_) = }")
+print("Ans = 47.10083333333307")
+print()
